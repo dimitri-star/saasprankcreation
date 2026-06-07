@@ -58,10 +58,12 @@ async function verifyAuth(token) {
 }
 
 // Enregistre la génération à des fins d'analyse (best-effort, non bloquant).
+// NB : le builder Supabase est thenable mais n'expose PAS .catch() → on await
+// puis on lit { error } (il ne throw pas, il renvoie l'erreur dans l'objet).
 async function logGeneration({ userId, body, imageUrl }) {
   const admin = getAdminClient()
   if (!admin) return
-  await admin.from('generations').insert({
+  const { error } = await admin.from('generations').insert({
     user_id:      userId,
     prompt:       (body.prompt || '').slice(0, 200),
     style:        body.style   || 'naturel',
@@ -69,7 +71,8 @@ async function logGeneration({ userId, body, imageUrl }) {
     mode:         body.mode    || 'image',
     image_url:    imageUrl,
     credits_used: 0,
-  }).catch(err => console.error('[logGeneration]', err?.message))
+  })
+  if (error) console.error('[logGeneration]', error.message)
 }
 
 // Point d'entrée principal appelé par les deux adaptateurs (Vite + Vercel).
@@ -104,6 +107,6 @@ export async function runGenerate({ body, ip, token }) {
       return { status: err.status, payload: { error: err.code, message: err.message } }
     }
     console.error('[runGenerate] erreur inattendue :', err)
-    return { status: 500, payload: { error: 'internal', message: `DEBUG: ${err?.message || err}` } }
+    return { status: 500, payload: { error: 'internal', message: 'Erreur interne. Réessaie.' } }
   }
 }
