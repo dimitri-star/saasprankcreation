@@ -46,51 +46,30 @@ export function rateLimit(ip) {
   HITS.set(ip, recent)
 }
 
-// Coût en crédits — miroir de COST dans useStudio.js.
-const CREDIT_COST = {
-  image: { standard: 1, hd: 2, ultra: 3 },
-  video: { standard: 4, hd: 6, ultra: 8 },
-}
-const creditCost = (mode, quality) => (CREDIT_COST[mode] || CREDIT_COST.image)[quality] ?? 1
-
-// Vérifie le JWT, récupère le profil, contrôle le solde de crédits.
-async function verifyAndGetCredits(token, mode, quality) {
+// Vérifie le JWT — génération gratuite, seul isPaid contrôle l'affichage.
+async function verifyAuth(token) {
   const admin = getAdminClient()
   if (!admin) throw new ApiError(503, 'supabase_missing', 'Auth non configurée.')
 
   const { data: { user }, error: authErr } = await admin.auth.getUser(token)
   if (authErr || !user) throw new ApiError(401, 'not_authenticated', 'Connecte-toi pour générer.')
 
-  const { data: profile, error: profileErr } = await admin
-    .from('profiles')
-    .select('credits_balance')
-    .eq('id', user.id)
-    .single()
-  if (profileErr || !profile) throw new ApiError(401, 'not_authenticated', 'Compte introuvable.')
-
-  const cost = creditCost(mode, quality)
-  if (profile.credits_balance < cost) {
-    throw new ApiError(402, 'no_credits', 'Plus de crédits — abonne-toi pour continuer.')
-  }
-  return { userId: user.id, creditsBalance: profile.credits_balance, cost }
+  return { userId: user.id }
 }
 
-// Déduit les crédits et enregistre la génération (best-effort, non bloquant).
-async function deductAndLog({ userId, creditsBalance, cost, body, imageUrl }) {
+// Enregistre la génération à des fins d'analyse (best-effort, non bloquant).
+async function logGeneration({ userId, body, imageUrl }) {
   const admin = getAdminClient()
   if (!admin) return
-  await Promise.all([
-    admin.from('profiles').update({ credits_balance: creditsBalance - cost }).eq('id', userId),
-    admin.from('generations').insert({
-      user_id:      userId,
-      prompt:       (body.prompt || '').slice(0, 200),
-      style:        body.style   || 'naturel',
-      quality:      body.quality || 'standard',
-      mode:         body.mode    || 'image',
-      image_url:    imageUrl,
-      credits_used: cost,
-    }),
-  ]).catch(err => console.error('[deductAndLog]', err?.message))
+  await admin.from('generations').insert({
+    user_id:      userId,
+    prompt:       (body.prompt || '').slice(0, 200),
+    style:        body.style   || 'naturel',
+    quality:      body.quality || 'standard',
+    mode:         body.mode    || 'image',
+    image_url:    imageUrl,
+    credits_used: 0,
+  }).catch(err => console.error('[logGeneration]', err?.message))
 }
 
 // Point d'entrée principal appelé par les deux adaptateurs (Vite + Vercel).
@@ -104,22 +83,21 @@ export async function runGenerate({ body, ip, token }) {
     const hasReplicate = !!process.env.REPLICATE_API_TOKEN
     const hasSupabase  = !!(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL)
 
-    // Mode production : Replicate + Supabase configurés → auth + crédits obligatoires.
+    // Mode production : Replicate + Supabase configurés → auth obligatoire (pas de crédits).
     // Mode démo : clé Replicate absente → on laisse generate() répondre no_key (stub honnête).
     let authCtx = null
     if (hasReplicate && hasSupabase) {
       if (!token) throw new ApiError(401, 'not_authenticated', 'Connecte-toi pour générer.')
-      authCtx = await verifyAndGetCredits(token, body.mode, body.quality)
+      authCtx = await verifyAuth(token)
     }
 
     const result = await generate(body)
 
     if (authCtx) {
-      await deductAndLog({ ...authCtx, body, imageUrl: result.imageUrl })
+      await logGeneration({ ...authCtx, body, imageUrl: result.imageUrl })
     }
 
-    const credits = authCtx ? authCtx.creditsBalance - authCtx.cost : null
-    return { status: 200, payload: { ...result, credits } }
+    return { status: 200, payload: { ...result, credits: null } }
 
   } catch (err) {
     if (err instanceof ApiError) {

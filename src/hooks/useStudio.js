@@ -3,9 +3,6 @@ import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
 // Logique métier du Studio partagée entre /studio et HeroStudio.
-// Toujours 1 crédit par génération (nano-banana standard).
-export const CREDITS_PER_GENERATION = 1
-
 // Persistance éphémère du résultat verrouillé. Survit à la redirection Stripe
 // (même onglet) → permet de restaurer + défloutera la photo au retour de paiement.
 const PENDING_KEY = 'pc_pending_result'
@@ -56,11 +53,6 @@ export function useStudio() {
           const r = { imageUrl: image, mode, locked: true, demo: true }
           savePending(r)
           setResult(r)
-          return
-        }
-        // Plus de crédits PrankCreation
-        if (data.error === 'no_credits') {
-          setError('Plus de crédits — abonne-toi pour continuer. 🚀')
           return
         }
         // Compte Replicate vide (billing)
