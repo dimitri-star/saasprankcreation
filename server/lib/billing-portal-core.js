@@ -37,9 +37,18 @@ export async function createBillingPortal({ token, origin }) {
       return_url: `${origin.replace(/\/$/, '')}/abonnement`,
     })
   } catch (stripeErr) {
-    const msg = stripeErr?.message || 'Stripe error inconnu'
-    console.error('[billing-portal] Stripe error:', stripeErr?.type, '|', msg)
-    throw new ApiError(502, 'stripe_error', msg)
+    console.error('[billing-portal] Stripe:', stripeErr?.type, stripeErr?.message)
+    // Mismatch test/live ou customer supprimé → on efface le customer_id en base
+    // pour que le prochain checkout recrée un customer dans le bon mode.
+    if (stripeErr?.code === 'resource_missing') {
+      await getAdminClient()
+        .from('profiles')
+        .update({ stripe_customer_id: null })
+        .eq('id', user.id)
+        .catch(() => {})
+      throw new ApiError(404, 'no_customer', 'Abonnement introuvable — souscris à nouveau pour accéder au portail.')
+    }
+    throw new ApiError(502, 'stripe_error', 'Impossible d\'ouvrir le portail Stripe. Réessaie dans un instant.')
   }
 
   return { url: session.url }
