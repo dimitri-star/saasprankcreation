@@ -30,10 +30,17 @@ export async function createBillingPortal({ token, origin }) {
     throw new ApiError(400, 'bad_origin', 'Origine invalide.')
   }
 
-  const session = await stripe.billingPortal.sessions.create({
-    customer: profile.stripe_customer_id,
-    return_url: `${origin.replace(/\/$/, '')}/abonnement`,
-  })
+  let session
+  try {
+    session = await stripe.billingPortal.sessions.create({
+      customer: profile.stripe_customer_id,
+      return_url: `${origin.replace(/\/$/, '')}/abonnement`,
+    })
+  } catch (stripeErr) {
+    const msg = stripeErr?.message || 'Stripe error inconnu'
+    console.error('[billing-portal] Stripe error:', stripeErr?.type, '|', msg)
+    throw new ApiError(502, 'stripe_error', msg)
+  }
 
   return { url: session.url }
 }
