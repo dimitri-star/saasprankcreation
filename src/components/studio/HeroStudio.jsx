@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useStudio } from '../../hooks/useStudio.js'
+import { useAuth } from '../../contexts/AuthContext.jsx'
+import { isPaid } from '../../lib/planLabels.js'
 import UploadPanel from './UploadPanel.jsx'
 import PromptPanel from './PromptPanel.jsx'
 import ResultView from './ResultView.jsx'
@@ -11,6 +13,10 @@ export default function HeroStudio() {
     mode, generating, result, error,
     canGenerate, handleGenerate, reset,
   } = useStudio()
+
+  // Un abonné voit ses photos générées EN CLAIR direct (pas de re-paywall).
+  const { profile } = useAuth()
+  const unlocked = isPaid(profile?.plan)
 
   const showOverlay = generating
   const showResult  = !generating && !!result
@@ -66,6 +72,7 @@ export default function HeroStudio() {
           result={result}
           mode={mode}
           image={image}
+          isUnlocked={unlocked}
           onReset={reset}
         />
       )}
