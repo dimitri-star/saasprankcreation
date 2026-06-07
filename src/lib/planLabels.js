@@ -14,8 +14,8 @@ export const PLAN_LABELS = {
 
 export const PLAN_CREDITS_LABEL = {
   free:              '3 crédits offerts',
-  weekly:            '15 crédits / semaine',
-  monthly:           '42 crédits / mois',
+  weekly:            '5 crédits / semaine',
+  monthly:           '10 crédits / mois',
   evasion:           '20 crédits / mois',
   signature:         '70 crédits / mois',
   prestige:          'Crédits illimités',

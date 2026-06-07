@@ -10,7 +10,7 @@ const savePending  = (r) => { try { sessionStorage.setItem(PENDING_KEY, JSON.str
 const clearPending = ()  => { try { sessionStorage.removeItem(PENDING_KEY) } catch { /* noop */ } }
 
 export function useStudio() {
-  const { openAuthModal } = useAuth()
+  const { openAuthModal, refreshProfile } = useAuth()
 
   const [image,      setImage]      = useState(null)
   const [image2,     setImage2]     = useState(null)
@@ -55,6 +55,12 @@ export function useStudio() {
           setResult(r)
           return
         }
+        // Plus de crédits (essais gratuits épuisés OU abonné à 0) → message serveur différencié.
+        if (data.error === 'no_credits') {
+          setError(data.message || 'Crédits épuisés.')
+          refreshProfile?.()   // resynchronise le compteur (header) avec le solde réel
+          return
+        }
         // Compte Replicate vide (billing)
         if (data.error === 'replicate_billing') {
           setError('Solde Replicate insuffisant — recharge ton compte sur replicate.com/account/billing.')
@@ -68,6 +74,7 @@ export function useStudio() {
       const r = { imageUrl: data.imageUrl, mode, genMode: data.mode, locked: true, demo: false }
       savePending(r)
       setResult(r)
+      refreshProfile?.()   // MAJ du solde de crédits après le débit côté serveur
     } catch {
       setError('Connexion impossible au service de génération. Vérifie ta connexion et réessaie.')
     } finally {
