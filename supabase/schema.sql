@@ -7,7 +7,7 @@
 CREATE TABLE IF NOT EXISTS public.profiles (
   id               UUID        REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email            TEXT        NOT NULL,
-  credits_balance  INTEGER     NOT NULL DEFAULT 3,   -- 3 crédits offerts à l'inscription
+  credits_balance  INTEGER     NOT NULL DEFAULT 0,   -- 0 crédit par défaut : abonnement requis pour générer
   plan             TEXT        NOT NULL DEFAULT 'free',
   stripe_customer_id TEXT,
   created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),

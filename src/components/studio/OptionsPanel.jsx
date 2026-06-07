@@ -11,7 +11,7 @@ export default function OptionsPanel({ onGenerate, canGenerate, generating }) {
         </button>
         <p className="mt-3 text-center text-xs text-white/35">
           {canGenerate
-            ? '1 crédit · résultat en ~15 s'
+            ? 'Résultat en ~15 s · débloqué avec un abonnement'
             : 'Ajoute une photo et décris ta scène'}
         </p>
       </div>

@@ -29,7 +29,7 @@ export default function HeroStudio() {
 
           <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-center text-xs text-white/40 sm:text-left">
-              3 transfos offertes · aucune carte requise
+              Génère ta photo · résultat débloqué dès 1,99€/sem
             </p>
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               <Link
