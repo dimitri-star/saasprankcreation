@@ -1,0 +1,108 @@
+// Presets de transformation (étape UI — pas de backend). Ce sont les CATÉGORIES
+// proposées dans le Studio : voyage, voiture, muscle, soirée… plus seulement du
+// voyage. `gradient` = placeholder visuel en attendant les vraies photos dans
+// /public/transformations/. `flag` = emoji de la catégorie (pas un drapeau).
+// `promptSeed` = texte pré-rempli dans le champ libre quand on clique la chip ;
+// injecté tel quel dans le prompt Replicate à l'étape génération.
+
+export const transformations = [
+  {
+    id: 'voyage',
+    name: 'Voyage',
+    country: 'Dubai · Bali · Tokyo',
+    flag: '🌴',
+    popular: true,
+    tagline: "Téléporté à l'autre bout du monde",
+    promptSeed: 'devant le Burj Khalifa à Dubai au coucher du soleil',
+    accent: '#f0c46a',
+    imgSrc: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #2b1a05 0%, #6b3e0a 42%, #c9882f 78%, #f0c46a 100%)',
+  },
+  {
+    id: 'voiture',
+    name: 'Voiture de luxe',
+    country: 'Supercars',
+    flag: '🏎️',
+    popular: true,
+    tagline: "Au volant d'une caisse de ouf",
+    promptSeed: "au volant d'une Lamborghini devant une villa de luxe",
+    accent: '#ff7a6b',
+    imgSrc: 'https://images.unsplash.com/photo-1544636331-9849d40c3e49?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #1a0406 0%, #5e0a12 44%, #b81e2a 76%, #ff7a6b 100%)',
+  },
+  {
+    id: 'muscle',
+    name: 'Version musclée',
+    country: 'Transformation',
+    flag: '💪',
+    popular: true,
+    tagline: 'Un physique de sportif en un clic',
+    promptSeed: 'physique athlétique très musclé, torse sculpté, sur une plage au coucher du soleil',
+    accent: '#ffae5c',
+    imgSrc: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #1f0f02 0%, #5e2e08 44%, #c2641a 76%, #ffae5c 100%)',
+  },
+  {
+    id: 'soiree',
+    name: 'En soirée',
+    country: 'Entouré de monde',
+    flag: '🎉',
+    popular: true,
+    tagline: "Au cœur de la fête, entouré d'amis",
+    promptSeed: "au milieu d'une soirée animée entouré d'amis qui font la fête",
+    accent: '#e84db0',
+    imgSrc: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #150826 0%, #3d0f56 44%, #8a1d8f 76%, #e84db0 100%)',
+  },
+  {
+    id: 'argent',
+    name: 'Mode riche',
+    country: 'Grand train de vie',
+    flag: '💸',
+    popular: false,
+    tagline: 'Liasses de billets et montre de luxe',
+    promptSeed: 'dans un décor de luxe entouré de liasses de billets, montre et voiture de luxe',
+    accent: '#7ee0a0',
+    imgSrc: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #03210f 0%, #0a5230 44%, #1d8f55 76%, #7ee0a0 100%)',
+  },
+  {
+    id: 'paysage',
+    name: 'Décor de fou',
+    country: 'Skyline & néons',
+    flag: '🏙️',
+    popular: false,
+    tagline: 'Rooftop, skyline et lumière ciné',
+    promptSeed: "sur un rooftop avec la skyline d'une mégapole illuminée la nuit",
+    accent: '#3fb0c9',
+    imgSrc: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #04121f 0%, #0a3550 48%, #126b86 82%, #3fb0c9 100%)',
+  },
+  {
+    id: 'tenue',
+    name: 'Relooking',
+    country: 'Drip & streetwear',
+    flag: '🧥',
+    popular: false,
+    tagline: 'Tenue stylée, total drip',
+    promptSeed: 'habillé en streetwear de luxe stylé dans un décor urbain',
+    accent: '#818cf8',
+    imgSrc: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #0a0a1f 0%, #1e1b4b 44%, #3b3f9e 76%, #818cf8 100%)',
+  },
+  {
+    id: 'neige',
+    name: 'Au ski',
+    country: 'Montagne & poudreuse',
+    flag: '🏔️',
+    popular: false,
+    tagline: 'Chalet de luxe sous la neige',
+    promptSeed: 'devant un chalet de luxe à la montagne sous la neige',
+    accent: '#d8eefb',
+    imgSrc: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=75',
+    gradient: 'linear-gradient(135deg, #06243f 0%, #0e4f7a 42%, #2a93c9 76%, #d8eefb 100%)',
+  },
+]
+
+// 4 transformations mises en avant dans le slider avant/après de la landing.
+export const featuredSliderIds = ['voyage', 'voiture', 'muscle', 'soiree']

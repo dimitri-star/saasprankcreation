@@ -1,0 +1,229 @@
+import { useState, useEffect } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.jsx'
+import { startCheckout } from '../lib/checkout.js'
+
+const SNAP_PLANS = new Set(['signature', 'prestige', 'lifetime_odyssee', 'lifetime_infini', 'snap_tuto'])
+const hasSnapAccess = (plan) => !!plan && SNAP_PLANS.has(plan)
+
+const STEPS = [
+  {
+    num: '01',
+    title: 'Génère et télécharge ta photo',
+    body: 'Dans le Studio PrankCreation, génère ta transfo et clique sur "Télécharger ta photo". Elle se retrouve dans la galerie de ton téléphone.',
+    icon: '📸',
+  },
+  {
+    num: '02',
+    title: 'Ouvre ta galerie et reste appuyé',
+    body: 'Va dans Photos (iPhone) ou Galerie (Android). Trouve la photo. Reste appuyé dessus plusieurs secondes jusqu\'au menu de partage.',
+    icon: '👆',
+  },
+  {
+    num: '03',
+    title: 'Appuie sur Partager',
+    body: 'Dans le menu, appuie sur "Partager". Si tu vois l\'icône Snapchat directement, clique dessus. Sinon appuie sur "Plus" (⋯) pour voir toutes les apps.',
+    icon: '↗️',
+  },
+  {
+    num: '04',
+    title: 'Sélectionne Snapchat',
+    body: 'Clique sur Snapchat. La photo s\'importe directement dans l\'éditeur Snap — comme si tu venais de la prendre à l\'instant avec l\'appareil photo.',
+    icon: '👻',
+  },
+  {
+    num: '05',
+    title: 'Envoie en snap rouge',
+    body: 'Dans Snap, appuie sur le timer en haut à droite. Règle-le sur une durée courte ou ∞. Choisis ton destinataire → Envoie. Ton pote reçoit un snap rouge qui disparaît.',
+    icon: '🔴',
+  },
+]
+
+const BONUS = [
+  'Ne mets JAMAIS la photo en story avant de l\'envoyer en snap rouge — ça crée un lien entre les deux.',
+  'Sur iPhone, tu peux aussi partager directement depuis l\'appli PrankCreation sans passer par la galerie.',
+  'Évite d\'envoyer la même image à plusieurs potes en même temps — ça sent le montage.',
+  'Teste d\'abord avec ton propre compte (note à soi-même) pour vérifier le rendu avant d\'envoyer.',
+]
+
+// Carte step réelle (déverrouillée)
+function StepCard({ step }) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+      <div className="flex items-start gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/15 text-xl">
+          {step.icon}
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-bold tracking-widest text-red-400/70">{step.num}</span>
+            <h3 className="text-sm font-semibold text-white">{step.title}</h3>
+          </div>
+          <p className="mt-1 text-sm leading-relaxed text-white/55">{step.body}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Carte placeholder verrouillée — aucun vrai texte, juste des blocs visuels
+function StepPlaceholder({ num }) {
+  return (
+    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5">
+      <div className="flex items-start gap-4">
+        <div className="h-10 w-10 shrink-0 rounded-xl bg-white/[0.06]" />
+        <div className="flex-1 space-y-2 pt-1">
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-5 rounded bg-white/10" />
+            <div className="h-3 w-32 rounded bg-white/10" />
+          </div>
+          <div className="h-3 w-full rounded bg-white/[0.06]" />
+          <div className="h-3 w-4/5 rounded bg-white/[0.06]" />
+          <div className="h-3 w-3/5 rounded bg-white/[0.06]" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default function TutoSnap() {
+  const { user, profile, openAuthModal, refreshProfile } = useAuth()
+  const unlocked = hasSnapAccess(profile?.plan) || !!user?.user_metadata?.snap_tuto_unlocked
+  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState(null)
+  const [params] = useSearchParams()
+
+  // Dès que l'utilisateur est chargé → rafraîchit user_metadata (snap_tuto_unlocked).
+  // Doit attendre user.id : la session Supabase arrive en async après le montage.
+  useEffect(() => {
+    if (user?.id) refreshProfile?.()
+  }, [user?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Retour Stripe après paiement : retry 3s pour rattraper un webhook lent.
+  useEffect(() => {
+    if (params.get('checkout') !== 'success' || !user?.id) return
+    const t = setTimeout(() => refreshProfile?.(), 3000)
+    return () => clearTimeout(t)
+  }, [user?.id, params]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleBuySnap = async () => {
+    if (loading) return
+    setErr(null)
+    setLoading(true)
+    try {
+      await startCheckout('snap-tuto')
+    } catch (e) {
+      if (e.code === 'auth') openAuthModal()
+      else setErr(e.message)
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="relative min-h-screen bg-noir">
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute left-1/2 top-0 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-red-500/10 blur-[160px]" />
+      </div>
+
+      <main className="container-luxe relative z-10 py-14">
+        {/* Header */}
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500 shadow-[0_8px_32px_rgba(239,68,68,0.4)]">
+            <svg viewBox="0 0 24 24" className="h-8 w-8 fill-white" aria-hidden>
+              <path d="M12.206 2C8.924 2 6.195 4.388 6.195 7.38c0 .322.028.637.08.944l-.895.05c-.372 0-.673.265-.673.59 0 .297.254.544.6.582l.637.07c-.16.333-.337.653-.53.953-.198.308-.416.587-.653.836-.24.251-.408.57-.408.907 0 .418.21.8.557 1.058.32.24.748.375 1.208.375.074 0 .148-.004.222-.012.304.571.888.984 1.574 1.072l-.01.041c-.143.537-.574.962-1.12 1.145l-.15.05c-.35.115-.54.468-.42.785.12.317.48.487.83.372l.15-.05c.36-.119.708-.29 1.032-.51.01.127.016.255.016.384 0 1.82 1.466 3.298 3.273 3.298 1.808 0 3.274-1.478 3.274-3.298 0-.129.005-.257.016-.384.324.22.672.391 1.032.51l.15.05c.35.115.71-.055.83-.372.12-.317-.07-.67-.42-.785l-.15-.05c-.546-.183-.977-.608-1.12-1.145l-.01-.041c.686-.088 1.27-.5 1.574-1.072.074.008.148.012.222.012.46 0 .888-.135 1.208-.375.347-.258.557-.64.557-1.058 0-.337-.168-.656-.408-.907-.237-.249-.455-.528-.653-.836-.193-.3-.37-.62-.53-.953l.637-.07c.346-.038.6-.285.6-.582 0-.325-.301-.59-.673-.59l-.895-.05c.052-.307.08-.622.08-.944C18.217 4.388 15.488 2 12.206 2z"/>
+            </svg>
+          </div>
+          <p className="eyebrow text-red-400">Technique exclusive</p>
+          <h1 className="mt-3 font-display text-4xl font-bold text-white">
+            Le snap rouge <span className="text-red-400">indétectable</span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55">
+            Envoie ta photo générée en snap rouge qui disparaît — ton pote ne verra jamais
+            que c'est une image IA. 5 étapes, 30 secondes.
+          </p>
+          {unlocked && (
+            <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] px-4 py-1.5 text-xs font-semibold text-emerald-300">
+              ✓ Inclus dans ton plan
+            </div>
+          )}
+        </div>
+
+        {/* Steps */}
+        <div className="mx-auto mt-12 max-w-xl">
+          {unlocked ? (
+            /* Déverrouillé : toutes les étapes visibles */
+            <div className="space-y-4">
+              {STEPS.map((step) => <StepCard key={step.num} step={step} />)}
+            </div>
+          ) : (
+            /* Verrouillé : placeholders + overlay opaque sur tout */
+            <div className="relative">
+              <div className="space-y-4 opacity-30" aria-hidden>
+                <StepPlaceholder num="01" />
+                <StepPlaceholder num="02" />
+                <StepPlaceholder num="03" />
+                <StepPlaceholder num="04" />
+                <StepPlaceholder num="05" />
+              </div>
+
+              {/* Overlay entièrement opaque — cache tout */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 rounded-2xl bg-[#0a0a0a]/95 px-6 py-10">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 text-2xl ring-1 ring-red-500/30">
+                  🔒
+                </div>
+
+                <div className="w-full max-w-xs space-y-3">
+                  <button
+                    onClick={handleBuySnap}
+                    disabled={loading}
+                    className="w-full rounded-2xl bg-gradient-to-r from-red-500 to-red-600 py-4 text-sm font-bold text-white shadow-lg shadow-red-500/30 transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
+                  >
+                    {loading ? 'Redirection…' : '🔴 Obtenir pour 0,99€ — accès à vie'}
+                  </button>
+
+                  <p className="text-center text-[11px] text-white/30">
+                    Paiement unique · Accès immédiat · 100% sécurisé
+                  </p>
+
+                  <div className="text-center">
+                    <Link
+                      to="/abonnement"
+                      className="text-xs text-white/30 underline-offset-2 hover:text-white/60 hover:underline transition-colors"
+                    >
+                      Ou inclus dans Signature (9,99€/mois) →
+                    </Link>
+                  </div>
+                </div>
+
+                {err && <p className="text-xs text-red-300/80">{err}</p>}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bonus tips — uniquement si déverrouillé */}
+        {unlocked && (
+          <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-amber-400/20 bg-amber-500/[0.05] p-6">
+            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-amber-400">
+              💡 Astuces pour ne pas se faire griller
+            </p>
+            <ul className="space-y-3">
+              {BONUS.map((tip) => (
+                <li key={tip} className="flex items-start gap-3 text-sm text-white/65">
+                  <span className="mt-0.5 shrink-0 text-amber-400">→</span>
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="mt-10 text-center">
+          <Link to="/studio" className="btn-bleu inline-flex px-10">
+            Générer ma transfo maintenant →
+          </Link>
+        </div>
+      </main>
+    </div>
+  )
+}
