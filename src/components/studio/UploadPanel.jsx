@@ -1,14 +1,38 @@
 import { useRef, useState } from 'react'
 
-const MAX_BYTES = 10 * 1024 * 1024 // 10 Mo
-const ACCEPTED = ['image/jpeg', 'image/png']
+const MAX_BYTES  = 10 * 1024 * 1024 // 10 Mo (vérification locale)
+const MAX_DIM    = 1280              // px — garde sous ~1 Mo base64 (limite Vercel : 4,5 Mo)
+const JPEG_Q     = 0.85
+const ACCEPTED   = ['image/jpeg', 'image/png', 'image/webp']
+
+// Redimensionne + compresse côté client avant envoi (Vercel limite le body à 4,5 Mo).
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = (e) => {
+      const img = new Image()
+      img.onerror = reject
+      img.onload = () => {
+        const scale  = Math.min(1, MAX_DIM / Math.max(img.width, img.height))
+        const canvas = document.createElement('canvas')
+        canvas.width  = Math.round(img.width  * scale)
+        canvas.height = Math.round(img.height * scale)
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', JPEG_Q))
+      }
+      img.src = e.target.result
+    }
+    reader.readAsDataURL(file)
+  })
+}
 
 export default function UploadPanel({ image, onImage, onReset }) {
   const inputRef = useRef(null)
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState('')
 
-  const handleFile = (file) => {
+  const handleFile = async (file) => {
     setError('')
     if (!file) return
     if (!ACCEPTED.includes(file.type)) {
@@ -19,9 +43,12 @@ export default function UploadPanel({ image, onImage, onReset }) {
       setError('Fichier trop lourd — 10 Mo maximum.')
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => onImage(reader.result)
-    reader.readAsDataURL(file)
+    try {
+      const dataUrl = await compressImage(file)
+      onImage(dataUrl)
+    } catch {
+      setError('Impossible de lire cette image. Réessaie avec un autre fichier.')
+    }
   }
 
   return (
