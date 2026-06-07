@@ -1,15 +1,19 @@
 // Pont HTTP partagé (plugin Vite dev + fonction Vercel prod).
 // Lit/valide la requête, applique le rate-limit, vérifie l'auth + les crédits,
-// exécute la génération, déduit 1 crédit et renvoie { status, payload }.
+// exécute la génération, déduit 1 crédit (abonnés décomptés) et renvoie { status, payload }.
 import { generate, ApiError } from './generate.js'
 import { getAdminClient } from './supabase.js'
 import { CATALOG, UNLIMITED_CREDITS } from './catalog.js'
 
-// Plans à crédits illimités (prestige, à-vie « Infini ») : dérivés du CATALOG
-// (creditsPerPeriod === sentinelle UNLIMITED). Ni blocage ni décompte pour eux.
-const UNLIMITED_PLANS = new Set(
+// Plans « décomptés » : abonnements/achats qui accordent un nombre FINI de crédits.
+// Dérivé du CATALOG (0 < creditsPerPeriod < UNLIMITED). Sont donc EXCLUS (génèrent
+// librement, sans décompte ni blocage) :
+//   - free       → le paywall des non-abonnés est le FLOU du résultat, pas un blocage ;
+//   - snap_tuto  → 0 crédit (simple déblocage de tuto, pas un plan de génération) ;
+//   - prestige / lifetime_infini → crédits illimités (sentinelle UNLIMITED).
+const METERED_PLANS = new Set(
   Object.values(CATALOG)
-    .filter((i) => i.creditsPerPeriod === UNLIMITED_CREDITS)
+    .filter((i) => i.creditsPerPeriod > 0 && i.creditsPerPeriod !== UNLIMITED_CREDITS)
     .map((i) => i.plan),
 )
 
@@ -56,7 +60,7 @@ export function rateLimit(ip) {
 }
 
 // Vérifie le JWT + lit le solde du profil (plan + credits_balance).
-// Le solde gouverne la GÉNÉRATION ; isPaid(plan) gouverne l'AFFICHAGE (flou).
+// Le solde gouverne la GÉNÉRATION des abonnés ; isPaid(plan) gouverne l'AFFICHAGE (flou).
 async function verifyAuthAndProfile(token) {
   const admin = getAdminClient()
   if (!admin) throw new ApiError(503, 'supabase_missing', 'Auth non configurée.')
@@ -120,31 +124,31 @@ export async function runGenerate({ body, ip, token }) {
     const hasReplicate = !!process.env.REPLICATE_API_TOKEN
     const hasSupabase  = !!(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL)
 
-    // Mode production : Replicate + Supabase configurés → auth obligatoire + crédits.
+    // Mode production : Replicate + Supabase configurés → auth obligatoire.
     // Mode démo : clé Replicate absente → on laisse generate() répondre no_key (stub honnête).
     let authCtx = null
     if (hasReplicate && hasSupabase) {
       if (!token) throw new ApiError(401, 'not_authenticated', 'Connecte-toi pour générer.')
       authCtx = await verifyAuthAndProfile(token)
 
-      // Garde crédits : on bloque AVANT de dépenser Replicate si le solde est à 0.
-      // Plans illimités exemptés. Message différencié essais gratuits / abonné.
-      const unlimited = UNLIMITED_PLANS.has(authCtx.plan)
-      if (!unlimited && authCtx.credits <= 0) {
-        const msg = authCtx.plan === 'free'
-          ? 'Tu as utilisé tes crédits gratuits. Abonne-toi pour continuer à générer.'
-          : 'Crédits épuisés. Attends le renouvellement de ton abonnement ou passe à une offre supérieure.'
-        throw new ApiError(402, 'no_credits', msg)
+      // Garde crédits : UNIQUEMENT pour les abonnements décomptés, AVANT de dépenser
+      // Replicate. Les comptes gratuits génèrent librement (leur paywall = le flou du
+      // résultat) → on ne les bloque jamais ici, sinon le tunnel « générer → flouter
+      // → payer » serait cassé (credits_balance free = 0 par défaut).
+      if (METERED_PLANS.has(authCtx.plan) && authCtx.credits <= 0) {
+        throw new ApiError(402, 'no_credits',
+          'Crédits épuisés. Attends le renouvellement de ton abonnement ou passe à une offre supérieure.')
       }
     }
 
     const result = await generate(body)
 
-    // Débit APRÈS succès uniquement (si Replicate échoue, aucun crédit perdu).
+    // Débit APRÈS succès, uniquement pour les abonnements décomptés
+    // (si Replicate échoue, aucun crédit perdu).
     let creditsLeft = null
     if (authCtx) {
-      const unlimited = UNLIMITED_PLANS.has(authCtx.plan)
-      if (!unlimited) {
+      const metered = METERED_PLANS.has(authCtx.plan)
+      if (metered) {
         creditsLeft = Math.max(0, authCtx.credits - 1)
         await deductCredit(authCtx.userId, creditsLeft)
       }
@@ -152,7 +156,7 @@ export async function runGenerate({ body, ip, token }) {
         userId:      authCtx.userId,
         body,
         imageUrl:    result.imageUrl,
-        creditsUsed: unlimited ? 0 : 1,
+        creditsUsed: metered ? 1 : 0,
       })
     }
 
