@@ -104,6 +104,6 @@ export async function runGenerate({ body, ip, token }) {
       return { status: err.status, payload: { error: err.code, message: err.message } }
     }
     console.error('[runGenerate] erreur inattendue :', err)
-    return { status: 500, payload: { error: 'internal', message: 'Erreur interne. Réessaie.' } }
+    return { status: 500, payload: { error: 'internal', message: `DEBUG: ${err?.message || err}` } }
   }
 }
