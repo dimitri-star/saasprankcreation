@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
-
-const SNAP_PLANS = new Set(['signature', 'prestige', 'lifetime_odyssee', 'lifetime_infini', 'snap_tuto'])
-const hasSnapAccess = (plan) => !!plan && SNAP_PLANS.has(plan)
+import { hasSnapAccess } from '../lib/planLabels.js'
 
 const STEPS = [
   {

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext.jsx'
+import { hasSnapAccess } from '../../lib/planLabels.js'
 
 // Télécharge l'image générée depuis son URL distante (Replicate CDN).
 async function downloadImage(url) {
@@ -12,7 +14,32 @@ async function downloadImage(url) {
   URL.revokeObjectURL(a.href)
 }
 
+// Partage la photo via la feuille de partage native du téléphone (API Web Share).
+// L'utilisateur choisit OVF Editor (ou Snapchat) → la photo y arrive déjà chargée,
+// puis il enchaîne sur l'envoi en snap. Aucune API Snap ne permet l'envoi auto :
+// c'est un raccourci qui évite « télécharger puis fouiller la galerie ».
+async function shareToSnap(url) {
+  try {
+    const res  = await fetch(url)
+    const blob = await res.blob()
+    const file = new File([blob], `prankcreation-${Date.now()}.jpg`, { type: blob.type || 'image/jpeg' })
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: 'PrankCreation', text: 'Ma transfo 🔥' })
+      return
+    }
+    // Appareil sans partage de fichier (desktop / navigateur incompatible) :
+    // on télécharge et on guide vers OVF Editor.
+    downloadImage(url)
+    alert("Le partage direct n'est pas dispo sur cet appareil. La photo a été téléchargée — ouvre OVF Editor pour l'envoyer en Snap.")
+  } catch (err) {
+    if (err?.name !== 'AbortError') console.error('[shareToSnap]', err) // AbortError = feuille fermée par l'user
+  }
+}
+
 export default function ResultView({ result, error, mode = 'image', image, isUnlocked = false, justUnlocked = false, onReset, generating }) {
+  const { profile, user } = useAuth()
+  const snapEnabled = hasSnapAccess(profile?.plan) || !!user?.user_metadata?.snap_tuto_unlocked
+
   // Le paywall s'applique à TOUT LE MONDE : la photo reste floutée tant que
   // l'accès n'est pas payé. Aucun aperçu "admin" — personne ne voit le rendu
   // réel sans avoir payé.
@@ -98,6 +125,20 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
             >
               ⬇ Télécharger {noun}
             </button>
+
+            {snapEnabled && (
+              <div className="w-full space-y-1.5">
+                <button
+                  onClick={() => shareToSnap(result.imageUrl)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FFFC00] px-4 py-3 text-base font-bold text-noir transition-transform hover:scale-[1.02] active:scale-95"
+                >
+                  <IconGhost /> Envoyer sur Snap
+                </button>
+                <p className="text-[11px] leading-relaxed text-white/40">
+                  Ouvre le partage de ton tél → choisis <span className="text-white/70">OVF Editor</span> → envoie en snap rouge.
+                </p>
+              </div>
+            )}
 
             {onReset && (
               <button
@@ -203,5 +244,13 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
         </div>
       </div>
     </div>
+  )
+}
+
+function IconGhost() {
+  return (
+    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12.103 2C8.82 2 6.09 4.388 6.09 7.38c0 .322.028.637.08.944l-.895.05c-.372 0-.673.265-.673.59 0 .297.254.544.6.582l.637.07c-.16.333-.337.653-.53.953-.198.308-.416.587-.653.836-.24.251-.408.57-.408.907 0 .418.21.8.557 1.058.32.24.748.375 1.208.375.074 0 .148-.004.222-.012.304.571.888.984 1.574 1.072l-.01.041c-.143.537-.574.962-1.12 1.145l-.15.05c-.35.115-.54.468-.42.785.12.317.48.487.83.372l.15-.05c.36-.119.708-.29 1.032-.51.01.127.016.255.016.384 0 1.82 1.466 3.298 3.273 3.298 1.808 0 3.274-1.478 3.274-3.298 0-.129.005-.257.016-.384.324.22.672.391 1.032.51l.15.05c.35.115.71-.055.83-.372.12-.317-.07-.67-.42-.785l-.15-.05c-.546-.183-.977-.608-1.12-1.145l-.01-.041c.686-.088 1.27-.5 1.574-1.072.074.008.148.012.222.012.46 0 .888-.135 1.208-.375.347-.258.557-.64.557-1.058 0-.337-.168-.656-.408-.907-.237-.249-.455-.528-.653-.836-.193-.3-.37-.62-.53-.953l.637-.07c.346-.038.6-.285.6-.582 0-.325-.301-.59-.673-.59l-.895-.05c.052-.307.08-.622.08-.944C18.114 4.388 15.385 2 12.103 2z"/>
+    </svg>
   )
 }

@@ -38,3 +38,13 @@ export function isPaid(plan) {
 export function isUnlimitedPlan(plan) {
   return plan === 'prestige' || plan === 'lifetime_infini'
 }
+
+// Plans qui incluent l'accès Snap : Tuto Snap déverrouillé + bouton « Envoyer sur Snap »
+// dans le Studio. (Le flag user_metadata.snap_tuto_unlocked s'ajoute en plus, côté
+// composant, pour un abonné ayant acheté le tuto sans changer de plan.)
+export const SNAP_PLANS = new Set(['signature', 'prestige', 'lifetime_odyssee', 'lifetime_infini', 'snap_tuto'])
+
+/** true si le plan inclut l'accès Snap (tuto + partage). */
+export function hasSnapAccess(plan) {
+  return !!plan && SNAP_PLANS.has(plan)
+}
