@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
 
 const FEATURES = [
-  '10 transfos / mois incluses',
+  '1000 crédits / mois inclus',
   'Toutes les 8 catégories de transfos',
   'Téléchargement direct sans paywall',
   'Annulable en 1 clic à tout moment',

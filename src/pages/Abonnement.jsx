@@ -3,7 +3,7 @@ import { plans, lifetimePlans, billingOptions } from '../data/plans.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
 import { openBillingPortal } from '../lib/billingPortal.js'
-import { planLabel, PLAN_CREDITS_LABEL, isPaid } from '../lib/planLabels.js'
+import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
 import LifetimeCard from '../components/pricing/LifetimeCard.jsx'
 import TrustBadges from '../components/landing/TrustBadges.jsx'
@@ -88,7 +88,10 @@ export default function Abonnement() {
                   Plan actuel&nbsp;: {planLabel(currentPlan)}
                 </p>
                 <p className="text-xs text-white/50">
-                  {PLAN_CREDITS_LABEL[currentPlan] ?? ''} · {profile?.credits_balance ?? '…'} crédits restants
+                  {PLAN_CREDITS_LABEL[currentPlan] ?? ''}
+                  {isUnlimitedPlan(currentPlan)
+                    ? ''
+                    : ` · ${profile?.credits_balance ?? '…'} crédits restants`}
                 </p>
               </div>
             </div>

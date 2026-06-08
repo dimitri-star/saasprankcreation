@@ -14,13 +14,13 @@ export const PLAN_LABELS = {
 
 export const PLAN_CREDITS_LABEL = {
   free:              '3 crédits offerts',
-  weekly:            '5 crédits / semaine',
-  monthly:           '10 crédits / mois',
-  evasion:           '20 crédits / mois',
-  signature:         '70 crédits / mois',
+  weekly:            '500 crédits / semaine',
+  monthly:           '1000 crédits / mois',
+  evasion:           '2000 crédits / mois',
+  signature:         '7000 crédits / mois',
   prestige:          'Crédits illimités',
-  lifetime_echappee: '20 crédits / mois · À vie',
-  lifetime_odyssee:  '60 crédits / mois · À vie',
+  lifetime_echappee: '2000 crédits / mois · À vie',
+  lifetime_odyssee:  '6000 crédits / mois · À vie',
   lifetime_infini:   'Crédits illimités · À vie',
 }
 
@@ -32,4 +32,9 @@ export function planLabel(plan) {
 /** true si l'utilisateur a un abonnement actif (pas free / pas null). */
 export function isPaid(plan) {
   return !!plan && plan !== 'free'
+}
+
+/** true si le plan accorde des crédits illimités → afficher « illimité » au lieu du solde brut. */
+export function isUnlimitedPlan(plan) {
+  return plan === 'prestige' || plan === 'lifetime_infini'
 }

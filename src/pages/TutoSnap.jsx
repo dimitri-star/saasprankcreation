@@ -10,40 +10,40 @@ const STEPS = [
   {
     num: '01',
     title: 'Génère et télécharge ta photo',
-    body: 'Dans le Studio PrankCreation, génère ta transfo et clique sur "Télécharger ta photo". Elle se retrouve dans la galerie de ton téléphone.',
+    body: 'Dans le Studio PrankCreation, génère ta transfo et clique sur "Télécharger ta photo". Elle atterrit dans la galerie de ton téléphone.',
     icon: '📸',
   },
   {
     num: '02',
-    title: 'Ouvre ta galerie et reste appuyé',
-    body: 'Va dans Photos (iPhone) ou Galerie (Android). Trouve la photo. Reste appuyé dessus plusieurs secondes jusqu\'au menu de partage.',
-    icon: '👆',
+    title: 'Installe l\'app OVF Editor',
+    body: 'C\'est elle qui fait passer ta photo pour une vraie capture live (et pas un "média chargé depuis la galerie"). Sur iPhone : App Store → cherche "OVF Editor". Sur Android : l\'équivalent est Snaptroid (installation en APK). C\'est gratuit.',
+    icon: '⬇️',
   },
   {
     num: '03',
-    title: 'Appuie sur Partager',
-    body: 'Dans le menu, appuie sur "Partager". Si tu vois l\'icône Snapchat directement, clique dessus. Sinon appuie sur "Plus" (⋯) pour voir toutes les apps.',
-    icon: '↗️',
+    title: 'Importe ta photo dans l\'app',
+    body: 'Ouvre OVF Editor, autorise l\'accès aux photos, puis sélectionne la transfo que tu viens de télécharger. C\'est tout ce dont l\'app a besoin.',
+    icon: '🖼️',
   },
   {
     num: '04',
-    title: 'Sélectionne Snapchat',
-    body: 'Clique sur Snapchat. La photo s\'importe directement dans l\'éditeur Snap — comme si tu venais de la prendre à l\'instant avec l\'appareil photo.',
+    title: 'Envoie vers Snapchat depuis l\'app',
+    body: 'Cherche le bouton "Envoyer / Partager vers Snapchat" (le libellé varie selon la version de l\'app). OVF Editor ouvre alors Snap avec ta photo déjà chargée — comme si tu venais de la prendre à l\'instant, sans le bandeau "média chargé".',
     icon: '👻',
   },
   {
     num: '05',
     title: 'Envoie en snap rouge',
-    body: 'Dans Snap, appuie sur le timer en haut à droite. Règle-le sur une durée courte ou ∞. Choisis ton destinataire → Envoie. Ton pote reçoit un snap rouge qui disparaît.',
+    body: 'Dans Snap, appuie sur le timer en haut à droite et règle-le sur une durée courte (1 à 3 s). Choisis ton destinataire → Envoie. Ton pote reçoit un vrai snap rouge qui disparaît.',
     icon: '🔴',
   },
 ]
 
 const BONUS = [
-  'Ne mets JAMAIS la photo en story avant de l\'envoyer en snap rouge — ça crée un lien entre les deux.',
-  'Sur iPhone, tu peux aussi partager directement depuis l\'appli PrankCreation sans passer par la galerie.',
-  'Évite d\'envoyer la même image à plusieurs potes en même temps — ça sent le montage.',
-  'Teste d\'abord avec ton propre compte (note à soi-même) pour vérifier le rendu avant d\'envoyer.',
+  'Ne mets JAMAIS la photo en story avant de l\'envoyer en snap rouge — ça crée un lien public entre les deux.',
+  'Garde le timer court (1 à 3 s) : ton pote n\'a pas le temps d\'analyser l\'image de près.',
+  'Évite d\'envoyer exactement la même image à plusieurs potes en même temps — ça sent le montage.',
+  'Cadrage naturel : pas de bord blanc ni de zone trop nette qui trahirait un montage.',
 ]
 
 // Carte step réelle (déverrouillée)
@@ -139,7 +139,7 @@ export default function TutoSnap() {
           </h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/55">
             Envoie ta photo générée en snap rouge qui disparaît — ton pote ne verra jamais
-            que c'est une image IA. 5 étapes, 30 secondes.
+            que c'est une image IA. 5 étapes simples, avec une app gratuite.
           </p>
           {unlocked && (
             <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] px-4 py-1.5 text-xs font-semibold text-emerald-300">
@@ -178,7 +178,7 @@ export default function TutoSnap() {
                     disabled={loading}
                     className="w-full rounded-2xl bg-gradient-to-r from-red-500 to-red-600 py-4 text-sm font-bold text-white shadow-lg shadow-red-500/30 transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
                   >
-                    {loading ? 'Redirection…' : '🔴 Obtenir pour 0,99€ — accès à vie'}
+                    {loading ? 'Redirection…' : '🔴 Obtenir pour 2,99€ — accès à vie'}
                   </button>
 
                   <p className="text-center text-[11px] text-white/30">
@@ -190,7 +190,7 @@ export default function TutoSnap() {
                       to="/abonnement"
                       className="text-xs text-white/30 underline-offset-2 hover:text-white/60 hover:underline transition-colors"
                     >
-                      Ou inclus dans Signature (9,99€/mois) →
+                      Ou inclus dans Signature (14,99€/mois) →
                     </Link>
                   </div>
                 </div>
@@ -201,9 +201,30 @@ export default function TutoSnap() {
           )}
         </div>
 
+        {/* Plan B garanti + avertissement honnête — uniquement si déverrouillé */}
+        {unlocked && (
+          <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-sky-400/20 bg-sky-500/[0.05] p-6">
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-sky-300">
+              🛟 Plan B garanti — si l'app ne marche pas
+            </p>
+            <p className="text-sm leading-relaxed text-white/65">
+              Snapchat met parfois à jour son appli et bloque ces outils. Si OVF Editor
+              affiche quand même « média chargé », passe par la{' '}
+              <span className="font-semibold text-white">méthode 2 écrans</span> : affiche
+              ta photo en plein écran sur un 2ᵉ téléphone (ou ton PC), puis photographie cet
+              écran avec l'appareil photo de Snap. C'est une vraie capture live à 100 %,
+              impossible à détecter — pense juste à éviter les reflets.
+            </p>
+            <p className="mt-4 text-[11px] leading-relaxed text-white/35">
+              ⚠️ Ces techniques contournent les règles de Snapchat : utilise-les avec bon sens.
+              Teste toujours sur ton propre compte (note perso) avant d'envoyer à un pote.
+            </p>
+          </div>
+        )}
+
         {/* Bonus tips — uniquement si déverrouillé */}
         {unlocked && (
-          <div className="mx-auto mt-10 max-w-xl rounded-2xl border border-amber-400/20 bg-amber-500/[0.05] p-6">
+          <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-amber-400/20 bg-amber-500/[0.05] p-6">
             <p className="mb-4 text-xs font-bold uppercase tracking-widest text-amber-400">
               💡 Astuces pour ne pas se faire griller
             </p>

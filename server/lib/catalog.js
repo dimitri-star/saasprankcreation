@@ -18,32 +18,38 @@ try {
 
 const EUR = 'eur'
 // Sentinelle « illimité » (v1) : un grand solde rechargé à chaque période.
-// Pas de bypass du compteur dans http.js — simple et sûr pour le lancement.
-const UNLIMITED = 9999
+// Doit rester TRÈS au-dessus du plus gros palier fini (signature_annual = 84000)
+// pour que la dérivation METERED et la détection « illimité » restent nettes.
+const UNLIMITED = 9_999_900
+
+// Coût en crédits d'UNE génération. Les crédits sont « gonflés » (×100) pour s'aligner sur
+// l'affichage des concurrents (2000 / 7000 crédits) SANS toucher au nombre réel d'images :
+// 1 image = 100 crédits ⇒ 2000 crédits = 20 images. Le coût Replicate ne bouge donc pas.
+export const GENERATION_COST = 100
 
 // mode: 'subscription' | 'payment' ; `interval` requis si subscription.
 // `creditsPerPeriod` = crédits accordés à CHAQUE facturation (annuel = 12× mensuel).
 export const CATALOG = {
   // ── Paywall /debloquer ──
-  weekly:  { label: 'PrankCreation Hebdo',   mode: 'subscription', interval: 'week',  amount: 199,  currency: EUR, creditsPerPeriod: 5,         plan: 'weekly'  },
-  monthly: { label: 'PrankCreation Mensuel', mode: 'subscription', interval: 'month', amount: 299,  currency: EUR, creditsPerPeriod: 10,        plan: 'monthly' },
+  weekly:  { label: 'PrankCreation Hebdo',   mode: 'subscription', interval: 'week',  amount: 199,  currency: EUR, creditsPerPeriod: 500,       plan: 'weekly'  },
+  monthly: { label: 'PrankCreation Mensuel', mode: 'subscription', interval: 'month', amount: 299,  currency: EUR, creditsPerPeriod: 1000,      plan: 'monthly' },
 
   // ── Abonnements /abonnement (mensuel + annuel) ──
-  evasion_monthly:   { label: 'Évasion — mensuel',   mode: 'subscription', interval: 'month', amount: 499,   currency: EUR, creditsPerPeriod: 20,        plan: 'evasion'   },
-  evasion_annual:    { label: 'Évasion — annuel',    mode: 'subscription', interval: 'year',  amount: 4788,  currency: EUR, creditsPerPeriod: 240,       plan: 'evasion'   },
-  signature_monthly: { label: 'Signature — mensuel', mode: 'subscription', interval: 'month', amount: 999,   currency: EUR, creditsPerPeriod: 70,        plan: 'signature' },
-  signature_annual:  { label: 'Signature — annuel',  mode: 'subscription', interval: 'year',  amount: 9588,  currency: EUR, creditsPerPeriod: 840,       plan: 'signature' },
-  prestige_monthly:  { label: 'Prestige — mensuel',  mode: 'subscription', interval: 'month', amount: 1999,  currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
-  prestige_annual:   { label: 'Prestige — annuel',   mode: 'subscription', interval: 'year',  amount: 19188, currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
+  evasion_monthly:   { label: 'Évasion — mensuel',   mode: 'subscription', interval: 'month', amount: 799,   currency: EUR, creditsPerPeriod: 2000,      plan: 'evasion'   },
+  evasion_annual:    { label: 'Évasion — annuel',    mode: 'subscription', interval: 'year',  amount: 7668,  currency: EUR, creditsPerPeriod: 24000,     plan: 'evasion'   },
+  signature_monthly: { label: 'Signature — mensuel', mode: 'subscription', interval: 'month', amount: 1499,  currency: EUR, creditsPerPeriod: 7000,      plan: 'signature' },
+  signature_annual:  { label: 'Signature — annuel',  mode: 'subscription', interval: 'year',  amount: 14388, currency: EUR, creditsPerPeriod: 84000,     plan: 'signature' },
+  prestige_monthly:  { label: 'Prestige — mensuel',  mode: 'subscription', interval: 'month', amount: 3499,  currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
+  prestige_annual:   { label: 'Prestige — annuel',   mode: 'subscription', interval: 'year',  amount: 33588, currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
 
-  // ── Tuto Snap (achat unique 0,99 €) ──
-  'snap-tuto': { label: 'Tuto Snap Rouge', mode: 'payment', amount: 99, currency: EUR, creditsPerPeriod: 0, plan: 'snap_tuto' },
+  // ── Tuto Snap (achat unique 2,99 €) ──
+  'snap-tuto': { label: 'Tuto Snap Rouge', mode: 'payment', amount: 299, currency: EUR, creditsPerPeriod: 0, plan: 'snap_tuto' },
 
   // ── Offres « à vie » (paiement unique) ──
   // creditsPerPeriod = crédits accordés à l'achat. La recharge mensuelle « à vie »
   // = un cron à brancher plus tard (TODO) ; v1 = un seul octroi.
-  'avie-echappee': { label: 'Échappée — à vie', mode: 'payment', amount: 4900,  currency: EUR, creditsPerPeriod: 20,        plan: 'lifetime_echappee' },
-  'avie-odyssee':  { label: 'Odyssée — à vie',  mode: 'payment', amount: 9900,  currency: EUR, creditsPerPeriod: 60,        plan: 'lifetime_odyssee'  },
+  'avie-echappee': { label: 'Échappée — à vie', mode: 'payment', amount: 4900,  currency: EUR, creditsPerPeriod: 2000,      plan: 'lifetime_echappee' },
+  'avie-odyssee':  { label: 'Odyssée — à vie',  mode: 'payment', amount: 9900,  currency: EUR, creditsPerPeriod: 6000,      plan: 'lifetime_odyssee'  },
   'avie-infini':   { label: 'Infini — à vie',   mode: 'payment', amount: 16900, currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'lifetime_infini'   },
 }
 

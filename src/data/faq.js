@@ -19,7 +19,7 @@ export const faqs = [
   },
   {
     q: 'Ça marche comment les crédits ?',
-    a: 'Chaque transfo te coûte des crédits selon la qualité : 1 (Standard), 2 (HD) ou 3 (4K Ultra). Ton plan te recharge en crédits tous les mois.',
+    a: 'Chaque transfo te coûte 100 crédits, quelle que soit la qualité. Ton plan te recharge en crédits tous les mois.',
     tags: ['general', 'pricing'],
   },
   {

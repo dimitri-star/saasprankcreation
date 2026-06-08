@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 const intents = [
   {
     keys: ['prix', 'tarif', 'coût', 'cout', 'abonnement', 'combien', 'payer', 'euro'],
-    a: 'Trois plans : Évasion 4,99 €, Signature 9,99 € et Prestige 19,99 €/mois. L’annuel te fait économiser 20 %. Tu veux voir le détail ?',
+    a: 'Trois plans : Évasion 7,99 €, Signature 14,99 € et Prestige 34,99 €/mois. L’annuel te fait économiser 20 %. Tu veux voir le détail ?',
     action: { label: 'Voir les tarifs', to: '/abonnement' },
   },
   {
@@ -30,7 +30,7 @@ const intents = [
   },
   {
     keys: ['crédit', 'credit', 'génération', 'generation', 'combien de photo'],
-    a: 'Chaque génération coûte 1 crédit (Standard), 2 (HD) ou 3 (4K Ultra). Ton plan recharge tes crédits chaque mois.',
+    a: 'Chaque génération coûte 100 crédits, quelle que soit la qualité. Ton plan recharge tes crédits chaque mois.',
   },
   {
     keys: ['bonjour', 'salut', 'hello', 'coucou', 'hey', 'yo'],

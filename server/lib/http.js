@@ -1,9 +1,9 @@
 // Pont HTTP partagé (plugin Vite dev + fonction Vercel prod).
 // Lit/valide la requête, applique le rate-limit, vérifie l'auth + les crédits,
-// exécute la génération, déduit 1 crédit (abonnés décomptés) et renvoie { status, payload }.
+// exécute la génération, déduit GENERATION_COST crédits (abonnés décomptés) et renvoie { status, payload }.
 import { generate, ApiError } from './generate.js'
 import { getAdminClient } from './supabase.js'
-import { CATALOG, UNLIMITED_CREDITS } from './catalog.js'
+import { CATALOG, UNLIMITED_CREDITS, GENERATION_COST } from './catalog.js'
 
 // Plans « décomptés » : abonnements/achats qui accordent un nombre FINI de crédits.
 // Dérivé du CATALOG (0 < creditsPerPeriod < UNLIMITED). Sont donc EXCLUS (génèrent
@@ -135,7 +135,7 @@ export async function runGenerate({ body, ip, token }) {
       // Replicate. Les comptes gratuits génèrent librement (leur paywall = le flou du
       // résultat) → on ne les bloque jamais ici, sinon le tunnel « générer → flouter
       // → payer » serait cassé (credits_balance free = 0 par défaut).
-      if (METERED_PLANS.has(authCtx.plan) && authCtx.credits <= 0) {
+      if (METERED_PLANS.has(authCtx.plan) && authCtx.credits < GENERATION_COST) {
         throw new ApiError(402, 'no_credits',
           'Crédits épuisés. Attends le renouvellement de ton abonnement ou passe à une offre supérieure.')
       }
@@ -149,14 +149,14 @@ export async function runGenerate({ body, ip, token }) {
     if (authCtx) {
       const metered = METERED_PLANS.has(authCtx.plan)
       if (metered) {
-        creditsLeft = Math.max(0, authCtx.credits - 1)
+        creditsLeft = Math.max(0, authCtx.credits - GENERATION_COST)
         await deductCredit(authCtx.userId, creditsLeft)
       }
       await logGeneration({
         userId:      authCtx.userId,
         body,
         imageUrl:    result.imageUrl,
-        creditsUsed: metered ? 1 : 0,
+        creditsUsed: metered ? GENERATION_COST : 0,
       })
     }
 

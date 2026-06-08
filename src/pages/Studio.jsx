@@ -7,7 +7,7 @@ import OptionsPanel from '../components/studio/OptionsPanel.jsx'
 import ResultView from '../components/studio/ResultView.jsx'
 import GeneratingOverlay from '../components/studio/GeneratingOverlay.jsx'
 import SecondPhotoPanel from '../components/studio/SecondPhotoPanel.jsx'
-import { planLabel, PLAN_CREDITS_LABEL, isPaid } from '../lib/planLabels.js'
+import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 
 export default function Studio() {
   const {
@@ -68,7 +68,7 @@ export default function Studio() {
           {showPanels && (
             <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-sm">
               <span className="text-bleu">◆</span>
-              <span className="text-white/80">{profile ? `${profile.credits_balance ?? 0} crédit${profile.credits_balance !== 1 ? 's' : ''}` : '3 crédits'}</span>
+              <span className="text-white/80">{profile ? (isUnlimitedPlan(profile.plan) ? 'crédits illimités' : `${profile.credits_balance ?? 0} crédit${profile.credits_balance !== 1 ? 's' : ''}`) : '3 crédits'}</span>
             </div>
           )}
         </div>
@@ -90,7 +90,7 @@ export default function Studio() {
                 </p>
                 <p className="mt-0.5 text-sm text-white/70">
                   {profile?.plan && profile.plan !== 'free'
-                    ? `${PLAN_CREDITS_LABEL[profile.plan] ?? ''} · ${profile.credits_balance ?? '…'} crédits disponibles maintenant.`
+                    ? `${PLAN_CREDITS_LABEL[profile.plan] ?? ''}${isUnlimitedPlan(profile.plan) ? ' · disponibles maintenant.' : ` · ${profile.credits_balance ?? '…'} crédits disponibles maintenant.`}`
                     : 'Tes crédits arrivent dans quelques secondes…'}
                 </p>
                 <p className="mt-1 text-xs text-white/40">

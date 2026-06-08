@@ -1,7 +1,7 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext.jsx'
-import { planLabel, isPaid } from '../../lib/planLabels.js'
+import { planLabel, isPaid, isUnlimitedPlan } from '../../lib/planLabels.js'
 import { openBillingPortal } from '../../lib/billingPortal.js'
 
 // Coque appli : navigation latérale. `onNavigate` referme le drawer mobile.
@@ -73,7 +73,9 @@ export default function Sidebar({ onNavigate }) {
                     ? <span className="text-bleu/80">{planLabel(profile.plan)}</span>
                     : 'Gratuit'}
                   {' · '}
-                  {profile?.credits_balance ?? '…'} crédit{profile?.credits_balance !== 1 ? 's' : ''}
+                  {isUnlimitedPlan(profile?.plan)
+                    ? 'crédits illimités'
+                    : `${profile?.credits_balance ?? '…'} crédit${profile?.credits_balance !== 1 ? 's' : ''}`}
                 </p>
               </div>
               <button
