@@ -1,9 +1,9 @@
 // Cœur métier de la génération — partagé entre l'adaptateur dev (plugin Vite)
 // et l'adaptateur prod (fonction Vercel). Aucune dépendance HTTP ici : entrée
 // = objet { image, image2?, prompt }, sortie = { imageUrl, mode }.
-// Routage : nano-banana Pro (Gemini 3 Pro Image) pour 1 OU 2 photos.
+// Routage : nano-banana standard (Gemini 2.5 Flash Image) pour 1 OU 2 photos.
 // Validation côté serveur SYSTÉMATIQUE.
-import { runNanoBananaPro } from './replicate.js'
+import { runNanoBanana } from './replicate.js'
 
 // Erreur typée : l'adaptateur HTTP mappe `status`/`code` vers la réponse.
 export class ApiError extends Error {
@@ -70,8 +70,8 @@ export async function generate({ image, image2, prompt }) {
   const img2 = hasSecond ? dataUrlToImage(image2) : null
 
   try {
-    // nano-banana Pro pour tout : 1 photo (édition) ou 2 photos (compositing).
-    const imageUrl = await runNanoBananaPro({
+    // nano-banana standard pour tout : 1 photo (édition) ou 2 photos (compositing).
+    const imageUrl = await runNanoBanana({
       image:  img1.buffer,
       image2: img2?.buffer,
       prompt: fullPrompt,

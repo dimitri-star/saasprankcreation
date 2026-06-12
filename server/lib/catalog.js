@@ -45,6 +45,12 @@ export const CATALOG = {
   // ── Tuto Snap (achat unique 2,99 €) ──
   'snap-tuto': { label: 'Tuto Snap Rouge', mode: 'payment', amount: 299, currency: EUR, creditsPerPeriod: 0, plan: 'snap_tuto' },
 
+  // ── Déblocage à l'unité (paiement unique, façon « Recharge de crédits » Credia) ──
+  // Pour qui REFUSE l'abonnement : débloque sa photo + petit pack (3 photos). plan:'unlock'
+  // → isPaid('unlock')=true (défloute le résultat) ET métré (creditsPerPeriod fini → décompté,
+  // bloque la génération à 0). Pas de modif webhook : grant() pose plan+credits génériquement.
+  'unlock-photo': { label: 'Débloque ta photo', mode: 'payment', amount: 299, currency: EUR, creditsPerPeriod: 300, plan: 'unlock' },
+
   // ── Offres « à vie » (paiement unique) ──
   // creditsPerPeriod = crédits accordés à l'achat. La recharge mensuelle « à vie »
   // = un cron à brancher plus tard (TODO) ; v1 = un seul octroi.

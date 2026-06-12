@@ -2,6 +2,7 @@
 // Doit rester aligné avec le `plan` posé par webhook-core.js (catalog.js).
 export const PLAN_LABELS = {
   free:              'Gratuit',
+  unlock:            'Photo débloquée',
   weekly:            'Hebdo',
   monthly:           'Mensuel',
   evasion:           'Évasion',
@@ -14,6 +15,7 @@ export const PLAN_LABELS = {
 
 export const PLAN_CREDITS_LABEL = {
   free:              '3 crédits offerts',
+  unlock:            '300 crédits · paiement unique',
   weekly:            '500 crédits / semaine',
   monthly:           '1000 crédits / mois',
   evasion:           '2000 crédits / mois',

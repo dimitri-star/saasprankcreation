@@ -51,6 +51,20 @@ export default function Debloquer() {
     // En cas de succès, startCheckout redirige (pas de reset du loading).
   }
 
+  // Paiement UNIQUE (sans abonnement) — rattrape ceux qui refusent l'abo.
+  const handlePayOnce = async () => {
+    if (loading) return
+    setErr(null)
+    setLoading(true)
+    try {
+      await startCheckout('unlock-photo')
+    } catch (e) {
+      if (e.code === 'auth') openAuthModal()
+      else setErr(e.message)
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-noir flex items-start justify-center px-4 py-10">
       {/* Ambient glow */}
@@ -179,6 +193,26 @@ export default function Debloquer() {
         {/* Security footer */}
         <p className="mt-3 text-center text-[11px] text-white/30">
           🔒 Paiement 100% sécurisé via Stripe · Accès instantané
+        </p>
+
+        {/* Séparateur */}
+        <div className="my-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-white/10" />
+          <span className="text-[11px] uppercase tracking-wider text-white/30">ou</span>
+          <span className="h-px flex-1 bg-white/10" />
+        </div>
+
+        {/* Option paiement UNIQUE — sans abonnement (rattrape les réfractaires à l'abo) */}
+        <button
+          type="button"
+          onClick={handlePayOnce}
+          disabled={loading}
+          className="w-full rounded-2xl border border-white/12 bg-white/[0.03] py-3.5 text-center text-sm font-semibold text-white/85 transition-all hover:border-white/25 hover:text-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Débloquer juste cette photo — 2,99€
+        </button>
+        <p className="mt-1.5 text-center text-[11px] text-white/35">
+          Paiement unique · sans abonnement · 3 photos incluses
         </p>
 
         {/* Back link */}

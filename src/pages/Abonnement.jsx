@@ -13,7 +13,6 @@ import Reveal from '../components/Reveal.jsx'
 
 export default function Abonnement() {
   const [billing, setBilling] = useState('annual')
-  const [promo, setPromo] = useState('')
   const [notice, setNotice] = useState(null)
   const [busy, setBusy] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
@@ -47,14 +46,6 @@ export default function Abonnement() {
     setPortalLoading(true)
     try { await openBillingPortal() } catch (err) { setNotice(err.message) }
     finally { setPortalLoading(false) }
-  }
-
-  const handlePromo = (e) => {
-    e.preventDefault()
-    if (!promo.trim()) return
-    setNotice(
-      `Code « ${promo.trim()} » noté. La validation des codes promo arrivera avec Stripe (étape 6).`,
-    )
   }
 
   return (
@@ -164,22 +155,6 @@ export default function Abonnement() {
         <Reveal className="mx-auto mt-10 max-w-4xl">
           <TrustBadges />
         </Reveal>
-
-        {/* Code promo */}
-        <form
-          onSubmit={handlePromo}
-          className="mx-auto mt-10 flex max-w-md items-center gap-2"
-        >
-          <input
-            value={promo}
-            onChange={(e) => setPromo(e.target.value)}
-            placeholder="Code promo"
-            className="w-full rounded-full border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-white placeholder:text-white/30 focus:border-bleu/50 focus:outline-none focus:ring-1 focus:ring-bleu/40"
-          />
-          <button type="submit" className="btn-ghost shrink-0 !px-6 !py-3">
-            Appliquer
-          </button>
-        </form>
 
         {notice && (
           <div className="mx-auto mt-8 flex max-w-2xl items-start gap-3 rounded-2xl border border-bleu/20 bg-bleu/[0.05] px-5 py-4">

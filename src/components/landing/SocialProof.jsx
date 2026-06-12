@@ -61,7 +61,7 @@ export default function SocialProof() {
             4.9 <Stars />
           </span>
           <span className="mt-1 text-sm text-white/45">
-            {reviews.toLocaleString('fr-FR')} avis vérifiés
+            {reviews.toLocaleString('fr-FR')} avis clients
           </span>
         </div>
 
