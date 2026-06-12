@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
@@ -19,6 +19,16 @@ export function useStudio() {
   const [generating, setGenerating] = useState(false)
   const [result,     setResult]     = useState(null)      // { imageUrl, mode, locked, demo }
   const [error,      setError]      = useState(null)
+
+  // Au montage : restaure la photo EN ATTENTE de déblocage (sessionStorage) si aucun
+  // résultat courant. Permet de RETROUVER la photo floutée en revenant en arrière
+  // depuis /abonnement (le state local est sinon perdu au démontage du composant).
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(PENDING_KEY)
+      if (raw) setResult((cur) => cur ?? JSON.parse(raw))
+    } catch { /* sessionStorage indispo : on ignore */ }
+  }, [])
 
   const canGenerate = !!image && prompt.trim().length > 0
 
