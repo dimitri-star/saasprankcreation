@@ -6,13 +6,14 @@ import { openBillingPortal } from '../lib/billingPortal.js'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
 import LifetimeCard from '../components/pricing/LifetimeCard.jsx'
+import NoSubOptions from '../components/pricing/NoSubOptions.jsx'
 import TrustBadges from '../components/landing/TrustBadges.jsx'
 import Faq from '../components/landing/Faq.jsx'
 import Footer from '../components/landing/Footer.jsx'
 import Reveal from '../components/Reveal.jsx'
 
 export default function Abonnement() {
-  const [billing, setBilling] = useState('annual')
+  const [billing, setBilling] = useState('monthly')
   const [notice, setNotice] = useState(null)
   const [busy, setBusy] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
@@ -67,6 +68,14 @@ export default function Abonnement() {
             Débloque toutes tes transfos sans limite. Change de plan ou résilie
             quand tu veux.
           </p>
+        </Reveal>
+
+        {/* Satisfait ou remboursé + résiliable (réassurance façon Credia) */}
+        <Reveal className="mx-auto mt-5 max-w-md text-center">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/[0.08] px-4 py-1.5 text-sm font-semibold text-emerald-300">
+            🛡️ Satisfait ou remboursé immédiatement
+          </span>
+          <p className="mt-2 text-xs text-white/45">Abonnement résiliable à tout moment dans les paramètres</p>
         </Reveal>
 
         {/* ── Bandeau « abonnement actuel » (utilisateur payant) ── */}
@@ -150,6 +159,13 @@ export default function Abonnement() {
                 </Reveal>
               ))}
         </div>
+
+        {/* Options SANS abonnement — photo seule + recharge de crédits (façon Credia) */}
+        {billing !== 'lifetime' && (
+          <Reveal className="mt-10">
+            <NoSubOptions onBuy={pay} loading={busy} />
+          </Reveal>
+        )}
 
         {/* Réassurance */}
         <Reveal className="mx-auto mt-10 max-w-4xl">
