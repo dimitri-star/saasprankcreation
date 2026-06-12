@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { hasSnapAccess } from '../../lib/planLabels.js'
+import { testimonials } from '../../data/testimonials.js'
 
 // Télécharge l'image générée depuis son URL distante (Replicate CDN).
 async function downloadImage(url) {
@@ -162,7 +163,8 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
 
   /* ─── Résultat VERROUILLÉ (non payant) — paywall façon Ravage ───────── */
   return (
-    <div className="overflow-hidden rounded-2xl border border-bleu/20 bg-white/[0.02]">
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-2xl border border-bleu/20 bg-white/[0.02]">
       {/* Bandeau urgence */}
       <div className="flex items-center justify-center gap-2 border-b border-amber-400/20 bg-amber-400/[0.07] px-4 py-2.5">
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
@@ -180,9 +182,14 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
             alt=""
             aria-hidden
             draggable={false}
-            className="h-full w-full scale-110 select-none object-cover blur-2xl"
+            className="h-full w-full scale-110 select-none object-cover blur-xl"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-noir via-noir/55 to-noir/25" />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/25 to-noir/5" />
+
+          {/* Badge « N°1 réalisme » (réassurance façon concurrent) */}
+          <span className="absolute left-1/2 top-3 z-10 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-amber-300/40 bg-noir/70 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-300 backdrop-blur-sm">
+            👑 N°1 réalisme
+          </span>
 
           {/* Badge Verrouillée */}
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-noir/70 px-3 py-1 text-[11px] font-semibold text-white/80 backdrop-blur-sm">
@@ -215,9 +222,17 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
             </p>
           </div>
 
-          <Link to="/debloquer" className="btn-bleu w-full justify-center text-base">
+          <Link
+            to="/debloquer"
+            className="btn-bleu w-full justify-center text-base shadow-lg shadow-bleu/30 transition-all duration-200 hover:scale-[1.03] hover:brightness-110 active:scale-95"
+          >
             ⚡ Débloquer {noun}
           </Link>
+
+          {/* Satisfait ou remboursé */}
+          <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/[0.08] px-3 py-2 text-xs font-semibold text-emerald-300">
+            🛡️ Satisfait ou remboursé immédiatement
+          </div>
 
           <div className="flex items-center gap-2 text-xs text-white/45">
             <span className="flex items-center gap-1">
@@ -243,6 +258,33 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
           )}
         </div>
       </div>
+      </div>
+
+      {/* Avis clients (réassurance façon concurrent) */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {testimonials.slice(0, 3).map((t) => (
+          <div key={t.name} className="rounded-xl border border-white/8 bg-white/[0.03] p-3">
+            <div className="text-xs tracking-tight text-amber-400">{'★'.repeat(t.rating)}{'☆'.repeat(5 - t.rating)}</div>
+            <p className="mt-1.5 text-[12px] leading-snug text-white/70">« {t.quote} »</p>
+            <p className="mt-1.5 text-[11px] font-semibold text-white/50">— {t.name}, {t.age} ans</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Bandeau Tuto Snap Rouge — bien visible */}
+      <Link
+        to="/tuto-snap"
+        className="flex items-center justify-between gap-3 rounded-2xl border border-red-500/30 bg-gradient-to-r from-red-600/15 to-red-500/[0.04] px-5 py-4 transition-all hover:border-red-500/50 hover:brightness-110"
+      >
+        <span className="flex items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-500/20 text-lg">🔴</span>
+          <span>
+            <span className="block font-display text-base font-bold text-white">Tuto Snap Rouge</span>
+            <span className="block text-[12px] text-white/55">Envoie tes photos en snap rouge indétectable</span>
+          </span>
+        </span>
+        <span className="shrink-0 rounded-full bg-red-500 px-4 py-2 text-xs font-bold uppercase tracking-wide text-white">Débloquer</span>
+      </Link>
     </div>
   )
 }

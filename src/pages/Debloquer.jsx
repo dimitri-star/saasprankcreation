@@ -170,10 +170,12 @@ export default function Debloquer() {
           <span className="text-white/40">· Noté excellent par nos créateurs</span>
         </div>
 
-        {/* No commitment badge */}
-        <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-white/40">
-          <span>✓</span>
-          <span>Annulable en 1 clic · Aucun engagement</span>
+        {/* Réassurance — satisfait ou remboursé + résiliable */}
+        <div className="mt-4 flex flex-col items-center gap-2 text-xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/25 bg-emerald-500/[0.08] px-3 py-1 font-semibold text-emerald-300">
+            🛡️ Satisfait ou remboursé immédiatement
+          </span>
+          <span className="text-white/40">Résiliable à tout moment dans les paramètres</span>
         </div>
 
         {/* CTA */}
