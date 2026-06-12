@@ -51,6 +51,11 @@ export const CATALOG = {
   // bloque la génération à 0). Pas de modif webhook : grant() pose plan+credits génériquement.
   'unlock-photo': { label: 'Débloque ta photo', mode: 'payment', amount: 299, currency: EUR, creditsPerPeriod: 300, plan: 'unlock' },
 
+  // ── Recharge de crédits (paiement unique, SANS abonnement — façon Credia) ──
+  // plan:'credits' → isPaid=true (peut générer + voir net) ET métré (solde fini, décompté).
+  'credits-pack-1': { label: 'Pack 1000 crédits', mode: 'payment', amount: 699,  currency: EUR, creditsPerPeriod: 1000, plan: 'credits' },
+  'credits-pack-2': { label: 'Pack 2500 crédits', mode: 'payment', amount: 1499, currency: EUR, creditsPerPeriod: 2500, plan: 'credits' },
+
   // ── Offres « à vie » (paiement unique) ──
   // creditsPerPeriod = crédits accordés à l'achat. La recharge mensuelle « à vie »
   // = un cron à brancher plus tard (TODO) ; v1 = un seul octroi.
