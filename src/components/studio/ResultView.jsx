@@ -182,9 +182,9 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
             alt=""
             aria-hidden
             draggable={false}
-            className="h-full w-full scale-110 select-none object-cover blur-xl"
+            className="h-full w-full scale-110 select-none object-cover blur-sm"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-noir/90 via-noir/25 to-noir/5" />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir/30 via-transparent to-transparent" />
 
           {/* Badge « N°1 réalisme » (réassurance façon concurrent) */}
           <span className="absolute left-1/2 top-3 z-10 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-amber-300/40 bg-noir/70 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-300 backdrop-blur-sm">
@@ -198,7 +198,7 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
 
           {/* Cadenas centré */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-bleu/40 bg-noir/60 backdrop-blur-sm">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full border border-bleu/40 bg-noir/25 backdrop-blur-sm">
               <svg className="h-7 w-7 text-bleu" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
