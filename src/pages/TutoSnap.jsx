@@ -64,26 +64,6 @@ function StepCard({ step }) {
   )
 }
 
-// Carte placeholder verrouillée — aucun vrai texte, juste des blocs visuels
-function StepPlaceholder({ num }) {
-  return (
-    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.02] p-5">
-      <div className="flex items-start gap-4">
-        <div className="h-10 w-10 shrink-0 rounded-xl bg-white/[0.06]" />
-        <div className="flex-1 space-y-2 pt-1">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-5 rounded bg-white/10" />
-            <div className="h-3 w-32 rounded bg-white/10" />
-          </div>
-          <div className="h-3 w-full rounded bg-white/[0.06]" />
-          <div className="h-3 w-4/5 rounded bg-white/[0.06]" />
-          <div className="h-3 w-3/5 rounded bg-white/[0.06]" />
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function TutoSnap() {
   const { user, profile, openAuthModal, refreshProfile } = useAuth()
   const unlocked = hasSnapAccess(profile?.plan) || !!user?.user_metadata?.snap_tuto_unlocked
@@ -154,46 +134,79 @@ export default function TutoSnap() {
               {STEPS.map((step) => <StepCard key={step.num} step={step} />)}
             </div>
           ) : (
-            /* Verrouillé : placeholders + overlay opaque sur tout */
-            <div className="relative">
-              <div className="space-y-4 opacity-30" aria-hidden>
-                <StepPlaceholder num="01" />
-                <StepPlaceholder num="02" />
-                <StepPlaceholder num="03" />
-                <StepPlaceholder num="04" />
-                <StepPlaceholder num="05" />
+            /* Verrouillé : page de vente attractive (façon Credia, en rouge/bleu) */
+            <div className="space-y-5">
+              {/* Carte valeur — ce que tu obtiens */}
+              <div className="rounded-2xl border border-red-500/25 bg-gradient-to-b from-red-500/[0.08] to-white/[0.01] p-6 shadow-[0_0_55px_-20px] shadow-red-500/50">
+                <div className="flex items-center justify-between">
+                  <span className="text-base font-bold text-white">Accès à vie</span>
+                  <span className="font-display text-3xl font-bold text-white">2,99€</span>
+                </div>
+                <ul className="mt-4 space-y-2.5">
+                  {[
+                    'La vraie méthode « snap rouge » sans média chargé',
+                    '100 % indétectable — ton pote n’y voit que du feu',
+                    'Les 5 étapes pas à pas + le Plan B garanti',
+                    'Les astuces pour ne jamais te faire griller',
+                    'Accès à vie · paiement unique',
+                  ].map((b) => (
+                    <li key={b} className="flex items-start gap-2.5 text-sm text-white/80">
+                      <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              {/* Overlay entièrement opaque — cache tout */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 rounded-2xl bg-[#0a0a0a]/95 px-6 py-10">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-500/10 text-2xl ring-1 ring-red-500/30">
-                  🔒
-                </div>
+              {/* CTA principal */}
+              <button
+                onClick={handleBuySnap}
+                disabled={loading}
+                className="w-full rounded-2xl bg-gradient-to-r from-red-500 to-red-600 py-4 text-base font-bold text-white shadow-lg shadow-red-500/30 transition-all hover:scale-[1.02] hover:brightness-110 active:scale-95 disabled:opacity-60"
+              >
+                {loading ? 'Redirection…' : '🔴 Débloquer pour 2,99€'}
+              </button>
+              <p className="text-center text-[11px] text-white/35">
+                Paiement unique · accès immédiat · 100 % sécurisé
+              </p>
+              {err && <p className="text-center text-xs text-red-300/80">{err}</p>}
 
-                <div className="w-full max-w-xs space-y-3">
-                  <button
-                    onClick={handleBuySnap}
-                    disabled={loading}
-                    className="w-full rounded-2xl bg-gradient-to-r from-red-500 to-red-600 py-4 text-sm font-bold text-white shadow-lg shadow-red-500/30 transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
-                  >
-                    {loading ? 'Redirection…' : '🔴 Obtenir pour 2,99€ — accès à vie'}
-                  </button>
+              <div className="text-center">
+                <button
+                  onClick={() => refreshProfile?.()}
+                  className="text-xs text-white/40 underline-offset-2 transition-colors hover:text-white/70 hover:underline"
+                >
+                  J'ai déjà payé — activer mon accès
+                </button>
+              </div>
 
-                  <p className="text-center text-[11px] text-white/30">
-                    Paiement unique · Accès immédiat · 100% sécurisé
-                  </p>
-
-                  <div className="text-center">
-                    <Link
-                      to="/abonnement"
-                      className="text-xs text-white/30 underline-offset-2 hover:text-white/60 hover:underline transition-colors"
-                    >
-                      Ou inclus dans Signature (14,99€/mois) →
-                    </Link>
+              {/* Upsell — déjà inclus avec un abonnement */}
+              <div className="rounded-2xl border border-bleu/25 bg-bleu/[0.04] p-5">
+                <p className="mb-3 flex items-center gap-2 text-sm font-bold text-white">
+                  <span className="text-bleu">✦</span> Déjà inclus avec un abonnement
+                </p>
+                <div className="space-y-2.5">
+                  <div className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
+                    <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
+                    <div>
+                      <p className="text-sm font-semibold text-white">Signature — 14,99€/mois</p>
+                      <p className="text-[12px] text-white/45">Snap Rouge inclus + 7000 crédits/mois</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
+                    <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
+                    <div>
+                      <p className="text-sm font-semibold text-white">Prestige — 34,99€/mois</p>
+                      <p className="text-[12px] text-white/45">Snap Rouge inclus + crédits illimités</p>
+                    </div>
                   </div>
                 </div>
-
-                {err && <p className="text-xs text-red-300/80">{err}</p>}
+                <Link
+                  to="/abonnement"
+                  className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-bleu py-3 text-sm font-bold text-white transition-all hover:brightness-110"
+                >
+                  Voir les abonnements →
+                </Link>
               </div>
             </div>
           )}
