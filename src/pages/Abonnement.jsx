@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { plans, lifetimePlans, billingOptions } from '../data/plans.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
@@ -19,6 +19,16 @@ export default function Abonnement() {
   const [portalLoading, setPortalLoading] = useState(false)
   const { openAuthModal, profile } = useAuth()
   const currentPlan = profile?.plan ?? null
+
+  // Déblocage « juste cette photo » → on arrive avec #sans-abonnement → défile
+  // jusqu'à la section sans-abo (photo seule + recharge de crédits).
+  useEffect(() => {
+    if (window.location.hash !== '#sans-abonnement') return
+    const t = setTimeout(() => {
+      document.getElementById('sans-abonnement')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 350)
+    return () => clearTimeout(t)
+  }, [])
 
   // Démarre le paiement Stripe pour un `priceKey` du catalogue serveur.
   const pay = async (priceKey) => {
@@ -162,9 +172,11 @@ export default function Abonnement() {
 
         {/* Options SANS abonnement — photo seule + recharge de crédits (façon Credia) */}
         {billing !== 'lifetime' && (
-          <Reveal className="mt-10">
-            <NoSubOptions onBuy={pay} loading={busy} />
-          </Reveal>
+          <div id="sans-abonnement" className="scroll-mt-24">
+            <Reveal className="mt-10">
+              <NoSubOptions onBuy={pay} loading={busy} />
+            </Reveal>
+          </div>
         )}
 
         {/* Réassurance */}

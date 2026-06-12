@@ -19,6 +19,7 @@ export function useStudio() {
   const [generating, setGenerating] = useState(false)
   const [result,     setResult]     = useState(null)      // { imageUrl, mode, locked, demo }
   const [error,      setError]      = useState(null)
+  const [noCredits,  setNoCredits]  = useState(false)  // abonné métré tombé à 0 crédit
 
   // Au montage : restaure la photo EN ATTENTE de déblocage (sessionStorage) si aucun
   // résultat courant. Permet de RETROUVER la photo floutée en revenant en arrière
@@ -45,6 +46,7 @@ export function useStudio() {
 
     setGenerating(true)
     setError(null)
+    setNoCredits(false)
     setResult(null)
 
     try {
@@ -68,6 +70,7 @@ export function useStudio() {
         // Plus de crédits (essais gratuits épuisés OU abonné à 0) → message serveur différencié.
         if (data.error === 'no_credits') {
           setError(data.message || 'Crédits épuisés.')
+          setNoCredits(true)
           refreshProfile?.()   // resynchronise le compteur (header) avec le solde réel
           return
         }
@@ -97,6 +100,7 @@ export function useStudio() {
     setImage2(null)
     setResult(null)
     setError(null)
+    setNoCredits(false)
     clearPending()
   }
 
@@ -120,6 +124,7 @@ export function useStudio() {
     generating,
     result,
     error,
+    noCredits,
     canGenerate,
     handleGenerate,
     reset,

@@ -6,6 +6,7 @@ import PromptPanel from '../components/studio/PromptPanel.jsx'
 import OptionsPanel from '../components/studio/OptionsPanel.jsx'
 import ResultView from '../components/studio/ResultView.jsx'
 import GeneratingOverlay from '../components/studio/GeneratingOverlay.jsx'
+import OutOfCredits from '../components/studio/OutOfCredits.jsx'
 import SecondPhotoPanel from '../components/studio/SecondPhotoPanel.jsx'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 
@@ -14,7 +15,7 @@ export default function Studio() {
     image, setImage, image2, setImage2,
     prompt, setPrompt,
     mode,
-    generating, result, error, canGenerate, handleGenerate, reset, restorePending,
+    generating, result, error, noCredits, canGenerate, handleGenerate, reset, restorePending,
   } = useStudio()
 
   const { profile, refreshProfile } = useAuth()
@@ -116,12 +117,16 @@ export default function Studio() {
                 generating={generating}
               />
             </div>
-            {error && (
+            {error && (noCredits ? (
+              <div className="mt-5">
+                <OutOfCredits message={error} />
+              </div>
+            ) : (
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-red-400/25 bg-red-500/[0.06] px-5 py-4">
                 <span className="mt-0.5 shrink-0 text-red-400">⚠</span>
                 <p className="text-sm leading-relaxed text-white/80">{error}</p>
               </div>
-            )}
+            ))}
           </>
         )}
 

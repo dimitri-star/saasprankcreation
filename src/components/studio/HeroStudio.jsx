@@ -6,11 +6,12 @@ import UploadPanel from './UploadPanel.jsx'
 import PromptPanel from './PromptPanel.jsx'
 import ResultView from './ResultView.jsx'
 import GeneratingOverlay from './GeneratingOverlay.jsx'
+import OutOfCredits from './OutOfCredits.jsx'
 
 export default function HeroStudio() {
   const {
     image, setImage, prompt, setPrompt,
-    mode, generating, result, error,
+    mode, generating, result, error, noCredits,
     canGenerate, handleGenerate, reset,
   } = useStudio()
 
@@ -54,12 +55,16 @@ export default function HeroStudio() {
             </div>
           </div>
 
-          {error && (
+          {error && (noCredits ? (
+            <div className="mt-4">
+              <OutOfCredits message={error} />
+            </div>
+          ) : (
             <div className="mt-4 flex items-start gap-3 rounded-2xl border border-red-400/25 bg-red-500/[0.06] px-4 py-3">
               <span className="mt-0.5 shrink-0 text-red-400">⚠</span>
               <p className="text-sm leading-relaxed text-white/80">{error}</p>
             </div>
-          )}
+          ))}
         </>
       )}
 
