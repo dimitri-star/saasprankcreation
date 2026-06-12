@@ -54,6 +54,19 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan }) {
 
       <div className="my-6 hairline" />
 
+      {/* Crédits mis en avant (façon Credia, en bleu) */}
+      <div className="mb-3 rounded-xl border border-bleu/40 bg-gradient-to-b from-bleu/[0.16] to-bleu/[0.03] px-4 py-3.5 text-center shadow-[0_0_30px_-10px] shadow-bleu/50">
+        <span className="font-display text-2xl font-bold text-white">{plan.credits}</span>
+      </div>
+
+      {/* Tuto Snap Rouge inclus (façon Credia, en rouge) */}
+      {plan.snapTuto && (
+        <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-red-500/35 bg-red-500/[0.08] px-3.5 py-2.5">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-red-500/20 text-sm">🔴</span>
+          <span className="text-[13px] font-bold text-white">Tutoriel Snap Rouge inclus</span>
+        </div>
+      )}
+
       <ul className="flex-1 space-y-3">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-white/75">
