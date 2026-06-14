@@ -10,7 +10,7 @@ const savePending  = (r) => { try { sessionStorage.setItem(PENDING_KEY, JSON.str
 const clearPending = ()  => { try { sessionStorage.removeItem(PENDING_KEY) } catch { /* noop */ } }
 
 export function useStudio() {
-  const { openAuthModal, refreshProfile } = useAuth()
+  const { refreshProfile } = useAuth()
 
   const [image,      setImage]      = useState(null)
   const [image2,     setImage2]     = useState(null)
@@ -36,13 +36,11 @@ export function useStudio() {
   const handleGenerate = async () => {
     if (!canGenerate || generating) return
 
-    // Vérifie la session AVANT de lancer — compte obligatoire pour générer.
+    // Login PAS obligatoire pour générer : on récupère le token s'il existe (abonné →
+    // décompte de crédits côté serveur), sinon génération anonyme → résultat flouté,
+    // le login n'arrive qu'au moment de payer pour débloquer.
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token ?? null
-    if (!token) {
-      openAuthModal()
-      return
-    }
 
     setGenerating(true)
     setError(null)
@@ -50,7 +48,8 @@ export function useStudio() {
     setResult(null)
 
     try {
-      const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
 
       const res = await fetch('/api/generate', {
         method: 'POST',
