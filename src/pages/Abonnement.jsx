@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { plans, lifetimePlans, billingOptions } from '../data/plans.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
+import { savePendingCheckout, useResumeCheckout } from '../hooks/usePendingCheckout.js'
 import { openBillingPortal } from '../lib/billingPortal.js'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
@@ -19,6 +20,10 @@ export default function Abonnement() {
   const [portalLoading, setPortalLoading] = useState(false)
   const { openAuthModal, profile } = useAuth()
   const currentPlan = profile?.plan ?? null
+
+  // Après connexion (clic « payer » sans compte → inscription), reprend le paiement
+  // automatiquement → redirection Stripe directe (plus besoin de re-cliquer le plan).
+  useResumeCheckout(setNotice)
 
   // Déblocage « juste cette photo » → on arrive avec #sans-abonnement → défile
   // jusqu'à la section sans-abo (photo seule + recharge de crédits).
@@ -39,8 +44,9 @@ export default function Abonnement() {
       await startCheckout(priceKey) // succès → redirection Stripe
     } catch (e) {
       if (e.code === 'auth') {
+        savePendingCheckout(priceKey)
         openAuthModal()
-        setNotice('Connecte-toi pour finaliser ton paiement.')
+        setNotice('Connecte-toi, ton paiement reprend tout seul juste après.')
       } else {
         setNotice(e.message)
       }

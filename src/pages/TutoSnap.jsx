@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
+import { savePendingCheckout, useResumeCheckout } from '../hooks/usePendingCheckout.js'
 import { hasSnapAccess } from '../lib/planLabels.js'
 
 const STEPS = [
@@ -71,6 +72,9 @@ export default function TutoSnap() {
   const [err, setErr] = useState(null)
   const [params] = useSearchParams()
 
+  // Après connexion, reprend l'achat du tuto automatiquement → redirection Stripe.
+  useResumeCheckout(setErr)
+
   // Dès que l'utilisateur est chargé → rafraîchit user_metadata (snap_tuto_unlocked).
   // Doit attendre user.id : la session Supabase arrive en async après le montage.
   useEffect(() => {
@@ -91,7 +95,7 @@ export default function TutoSnap() {
     try {
       await startCheckout('snap-tuto')
     } catch (e) {
-      if (e.code === 'auth') openAuthModal()
+      if (e.code === 'auth') { savePendingCheckout('snap-tuto'); openAuthModal() }
       else setErr(e.message)
       setLoading(false)
     }
