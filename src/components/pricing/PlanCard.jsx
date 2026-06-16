@@ -5,7 +5,7 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan }) {
 
   return (
     <div
-      className={`relative flex h-full flex-col rounded-2xl border p-7 transition-all duration-300 ${
+      className={`relative flex h-full flex-col rounded-2xl border p-5 transition-all duration-300 ${
         plan.popular
           ? 'border-bleu/40 bg-gradient-to-b from-bleu/[0.08] to-white/[0.02] shadow-bleu backdrop-blur-xl'
           : 'glass hover:border-white/20'
@@ -28,8 +28,8 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan }) {
       </div>
       <p className="text-sm text-white/45">{plan.tagline}</p>
 
-      <div className="mt-6 flex items-end gap-1.5">
-        <span className="font-display text-5xl font-bold leading-none text-white">
+      <div className="mt-4 flex items-end gap-1.5">
+        <span className="font-display text-4xl font-bold leading-none text-white">
           {price} €
         </span>
         <span className="mb-1 text-sm text-white/45">/ mois</span>
@@ -52,11 +52,11 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan }) {
         )}
       </div>
 
-      <div className="my-6 hairline" />
+      <div className="my-4 hairline" />
 
       {/* Crédits mis en avant (façon Credia, en bleu) */}
-      <div className="mb-3 rounded-xl border border-bleu/40 bg-gradient-to-b from-bleu/[0.16] to-bleu/[0.03] px-4 py-3.5 text-center shadow-[0_0_30px_-10px] shadow-bleu/50">
-        <span className="font-display text-2xl font-bold text-white">{plan.credits}</span>
+      <div className="mb-3 rounded-xl border border-bleu/40 bg-gradient-to-b from-bleu/[0.16] to-bleu/[0.03] px-4 py-2.5 text-center shadow-[0_0_30px_-10px] shadow-bleu/50">
+        <span className="font-display text-xl font-bold text-white">{plan.credits}</span>
       </div>
 
       {/* Tuto Snap Rouge inclus (façon Credia, en rouge) */}
@@ -67,7 +67,7 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan }) {
         </div>
       )}
 
-      <ul className="flex-1 space-y-3">
+      <ul className="flex-1 space-y-2">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-white/75">
             <span className="mt-0.5 shrink-0 text-bleu">✓</span>

@@ -14,7 +14,7 @@ import Footer from '../components/landing/Footer.jsx'
 import Reveal from '../components/Reveal.jsx'
 
 export default function Abonnement() {
-  const [billing, setBilling] = useState('monthly')
+  const [billing, setBilling] = useState('annual')
   const [notice, setNotice] = useState(null)
   const [busy, setBusy] = useState(false)
   const [portalLoading, setPortalLoading] = useState(false)
@@ -162,7 +162,7 @@ export default function Abonnement() {
         </div>
 
         {/* Cartes — l'option « À vie » du toggle remplace les 3 tiers par les offres paiement unique */}
-        <div className="mt-12 grid grid-cols-1 items-stretch gap-6 md:grid-cols-3">
+        <div className="mt-8 grid grid-cols-1 items-stretch gap-5 md:grid-cols-3">
           {billing === 'lifetime'
             ? lifetimePlans.map((plan, i) => (
                 <Reveal key={plan.id} delay={i * 80} className="h-full">

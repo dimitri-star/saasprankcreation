@@ -124,12 +124,10 @@ export async function runGenerate({ body, ip, token }) {
     const hasReplicate = !!process.env.REPLICATE_API_TOKEN
     const hasSupabase  = !!(process.env.SUPABASE_SERVICE_ROLE_KEY && process.env.SUPABASE_URL)
 
-    // Login PAS obligatoire pour générer : si un token est fourni (utilisateur connecté),
-    // on vérifie l'auth + le solde (abonnés décomptés) ; sinon génération ANONYME →
-    // résultat flouté, le login n'arrive qu'au paiement. L'abus est borné par le
-    // rate-limit IP + le coût/image faible + le flou (image inutilisable sans payer).
+    // Compte obligatoire pour générer (Replicate + Supabase configurés = prod).
     let authCtx = null
-    if (hasReplicate && hasSupabase && token) {
+    if (hasReplicate && hasSupabase) {
+      if (!token) throw new ApiError(401, 'not_authenticated', 'Connecte-toi pour générer.')
       authCtx = await verifyAuthAndProfile(token)
 
       // Garde crédits : UNIQUEMENT pour les abonnements décomptés, AVANT de dépenser
