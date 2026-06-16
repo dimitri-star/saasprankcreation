@@ -175,16 +175,28 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2">
-        {/* Aperçu flouté */}
+        {/* Aperçu avec filigrane */}
         <div className="relative aspect-square overflow-hidden md:aspect-auto md:min-h-[400px]">
           <img
             src={result.imageUrl}
             alt=""
             aria-hidden
             draggable={false}
-            className="h-full w-full scale-110 select-none object-cover blur-sm"
+            onContextMenu={(e) => e.preventDefault()}
+            className="h-full w-full select-none object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-noir/30 via-transparent to-transparent" />
+          {/* Filigrane répété en diagonale (comme sites de photos stock) */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 select-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
+                '<svg xmlns="http://www.w3.org/2000/svg" width="210" height="120"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="700" font-size="14" letter-spacing="1" fill="rgba(255,255,255,0.28)" transform="rotate(-35 105 60)">PrankCreation</text></svg>'
+              )}")`,
+              backgroundRepeat: 'repeat',
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-noir/20 via-transparent to-transparent" />
 
           {/* Badge « N°1 réalisme » (réassurance façon concurrent) */}
           <span className="absolute left-1/2 top-3 z-10 inline-flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-amber-300/40 bg-noir/70 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-300 backdrop-blur-sm">
