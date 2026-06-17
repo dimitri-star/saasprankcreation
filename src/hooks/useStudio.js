@@ -9,6 +9,14 @@ const PENDING_KEY = 'pc_pending_result'
 const savePending  = (r) => { try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(r)) } catch { /* quota dépassé : on ignore */ } }
 const clearPending = ()  => { try { sessionStorage.removeItem(PENDING_KEY) } catch { /* noop */ } }
 
+// Sauvegarde la PHOTO + le TEXTE saisis avant la connexion. Indispensable : un login
+// (surtout OAuth Google) recharge la page → tout le state local est perdu. Au retour,
+// on restaure → l'utilisateur retrouve sa photo + sa description et n'a plus qu'à
+// cliquer sur Générer (zéro friction = bien meilleure conversion).
+const INPUT_KEY = 'pc_pending_input'
+const saveInput  = (d) => { try { sessionStorage.setItem(INPUT_KEY, JSON.stringify(d)) } catch { /* quota : on ignore */ } }
+const clearInput = ()  => { try { sessionStorage.removeItem(INPUT_KEY) } catch { /* noop */ } }
+
 export function useStudio() {
   const { openAuthModal, refreshProfile } = useAuth()
 
@@ -29,6 +37,20 @@ export function useStudio() {
       const raw = sessionStorage.getItem(PENDING_KEY)
       if (raw) setResult((cur) => cur ?? JSON.parse(raw))
     } catch { /* sessionStorage indispo : on ignore */ }
+
+    // Restaure la photo + le texte saisis AVANT la connexion (sinon perdus au
+    // retour d'un login qui recharge la page). L'utilisateur reprend où il en était.
+    try {
+      const rawIn = sessionStorage.getItem(INPUT_KEY)
+      if (rawIn) {
+        const d = JSON.parse(rawIn)
+        if (d.image)  setImage(d.image)
+        if (d.image2) setImage2(d.image2)
+        if (d.prompt) setPrompt(d.prompt)
+        if (d.mode)   setMode(d.mode)
+        clearInput()
+      }
+    } catch { /* sessionStorage indispo : on ignore */ }
   }, [])
 
   const canGenerate = !!image && prompt.trim().length > 0
@@ -40,10 +62,13 @@ export function useStudio() {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token ?? null
     if (!token) {
+      // Sauvegarde photo + texte → restaurés automatiquement après connexion.
+      saveInput({ image, image2, prompt, mode })
       openAuthModal()
       return
     }
 
+    clearInput()   // authentifié : la saisie n'est plus « en attente »
     setGenerating(true)
     setError(null)
     setNoCredits(false)
@@ -102,6 +127,7 @@ export function useStudio() {
     setError(null)
     setNoCredits(false)
     clearPending()
+    clearInput()
   }
 
   // Restaure la photo mise en attente avant le paiement (appelé au retour Stripe).

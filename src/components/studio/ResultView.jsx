@@ -207,17 +207,6 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-noir/70 px-3 py-1 text-[11px] font-semibold text-white/80 backdrop-blur-sm">
             🔒 Verrouillée
           </span>
-
-          {/* Cadenas centré */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full border border-bleu/40 bg-noir/25 backdrop-blur-sm">
-              <svg className="h-7 w-7 text-bleu" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="5" y="11" width="14" height="9" rx="2" />
-                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-              </svg>
-            </span>
-          </div>
         </div>
 
         {/* Panneau déverrouillage */}
@@ -227,10 +216,10 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
               ✓ {isVideo ? 'Ta vidéo est prête' : 'Ta photo est prête'} !
             </span>
             <h3 className="mt-3 font-display text-2xl font-bold text-white">
-              Débloque {noun} pour la voir <span className="text-bleu">en clair</span>
+              Débloque {noun} <span className="text-bleu">sans le filigrane</span>
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-white/50">
-              Téléchargeable à vie, sans filigrane — prête à envoyer direct sur Snap ou Insta.
+              Télécharge-la en HD sans filigrane — prête à envoyer direct sur Snap ou Insta.
             </p>
           </div>
 
@@ -238,7 +227,7 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
             to="/abonnement#sans-abonnement"
             className="btn-bleu w-full justify-center text-base shadow-lg shadow-bleu/30 transition-all duration-200 hover:scale-[1.03] hover:brightness-110 active:scale-95"
           >
-            ⚡ Débloquer {noun}
+            ⚡ Débloquer {noun} sans filigrane
           </Link>
 
           {/* Satisfait ou remboursé */}
