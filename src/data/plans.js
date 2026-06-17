@@ -5,7 +5,6 @@
 export const billingOptions = [
   { id: 'monthly', label: 'Mensuel' },
   { id: 'annual', label: 'Annuel', badge: '-20%' },
-  { id: 'lifetime', label: 'À vie' },
 ]
 
 export const plans = [

@@ -7,6 +7,24 @@ const ANIMALS    = ['Shark','Wolf','Eagle','Fox','Bear','Lynx','Hawk','Tiger','C
 const MAX        = 60
 const RATE_MS    = 3000  // 1 message toutes les 3 secondes max
 
+// Messages d'amorce affichés en haut du chat tant qu'il y a peu d'activité réelle
+// (preuve sociale au lancement, façon Credia). Ils s'effacent naturellement en
+// bas de pile quand assez de vrais messages arrivent (slice MAX).
+const SEED = [
+  { id: 'seed-1',  username: 'Mega_Cobra27',  content: "frère c'est trop réaliste 😭" },
+  { id: 'seed-2',  username: 'Lola_Stx',      content: "j'ai bluffé ma mère avec la photo à Dubaï mdrr" },
+  { id: 'seed-3',  username: 'Neo_Wolf12',    content: 'comment on fait pour un essai gratuit ?' },
+  { id: 'seed-4',  username: 'Fast_Hawk13',   content: 'ça marche vraiment le snap rouge ?' },
+  { id: 'seed-5',  username: 'Cool_Shark84',  content: 'le filigrane il part quand on paye ?' },
+  { id: 'seed-6',  username: 'Dark_Lynx7',    content: "ouais il part direct dès que t'as pris l'abo" },
+  { id: 'seed-7',  username: 'Super_Tiger43', content: 'on peut payer en paypal ?' },
+  { id: 'seed-8',  username: 'Epic_Fox22',    content: 'première fois que ça rend aussi bien wsh' },
+  { id: 'seed-9',  username: 'Wild_Bear9',    content: "j'ai pris signature ça vaut le coup les crédits" },
+  { id: 'seed-10', username: 'Hyper_Viper5',  content: 'meilleur site de prank fr franchement' },
+  { id: 'seed-11', username: 'Real_Lion31',   content: 'trop stylé la transfo voiture 🏎️' },
+  { id: 'seed-12', username: 'Flash_Panda8',  content: 'vous mettez quoi comme photo vous ?' },
+]
+
 export function generateUsername(userId) {
   let h = 0
   for (const c of userId) h = (h * 31 + c.charCodeAt(0)) & 0xffffff
@@ -32,7 +50,8 @@ export function useChat(active) {
       .order('created_at', { ascending: false })
       .limit(MAX)
       .then(({ data }) => {
-        if (data) setMessages(data.reverse())
+        // Amorces en haut, puis les vrais messages (du plus ancien au plus récent).
+        setMessages([...SEED, ...((data || []).reverse())])
         setLoading(false)
       })
   }, [active])

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
-import { plans, lifetimePlans, billingOptions } from '../data/plans.js'
+import { plans, billingOptions } from '../data/plans.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
 import { savePendingCheckout, useResumeCheckout } from '../hooks/usePendingCheckout.js'
 import { openBillingPortal } from '../lib/billingPortal.js'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
-import LifetimeCard from '../components/pricing/LifetimeCard.jsx'
 import NoSubOptions from '../components/pricing/NoSubOptions.jsx'
 import TrustBadges from '../components/landing/TrustBadges.jsx'
 import Faq from '../components/landing/Faq.jsx'
@@ -16,7 +15,7 @@ import Reveal from '../components/Reveal.jsx'
 export default function Abonnement() {
   const [billing, setBilling] = useState('annual')
   const [notice, setNotice] = useState(null)
-  const [busy, setBusy] = useState(false)
+  const [payingKey, setPayingKey] = useState(null)  // priceKey en cours → spinner ciblé
   const [portalLoading, setPortalLoading] = useState(false)
   const { openAuthModal, profile } = useAuth()
   const currentPlan = profile?.plan ?? null
@@ -36,12 +35,14 @@ export default function Abonnement() {
   }, [])
 
   // Démarre le paiement Stripe pour un `priceKey` du catalogue serveur.
+  // setPayingKey AVANT l'appel réseau → le bouton affiche « Redirection… »
+  // instantanément (le cold-start serverless + l'appel Stripe prennent ~1-3 s).
   const pay = async (priceKey) => {
-    if (busy) return
+    if (payingKey) return
     setNotice(null)
-    setBusy(true)
+    setPayingKey(priceKey)
     try {
-      await startCheckout(priceKey) // succès → redirection Stripe
+      await startCheckout(priceKey) // succès → redirection Stripe (la page quitte)
     } catch (e) {
       if (e.code === 'auth') {
         savePendingCheckout(priceKey)
@@ -50,14 +51,12 @@ export default function Abonnement() {
       } else {
         setNotice(e.message)
       }
-      setBusy(false)
+      setPayingKey(null)
     }
   }
 
   // billing ∈ { 'monthly', 'annual' } → priceKey ex. « signature_annual ».
-  const handleSelect   = (plan) => pay(`${plan.id}_${billing}`)
-  // Offres « à vie » : l'id est déjà le priceKey (ex. « avie-odyssee »).
-  const handleLifetime = (plan) => pay(plan.id)
+  const handleSelect = (plan) => pay(`${plan.id}_${billing}`)
 
   const handleManageAbo = async () => {
     setPortalLoading(true)
@@ -163,27 +162,25 @@ export default function Abonnement() {
 
         {/* Cartes — l'option « À vie » du toggle remplace les 3 tiers par les offres paiement unique */}
         <div className="mt-8 grid grid-cols-1 items-stretch gap-5 md:grid-cols-3">
-          {billing === 'lifetime'
-            ? lifetimePlans.map((plan, i) => (
-                <Reveal key={plan.id} delay={i * 80} className="h-full">
-                  <LifetimeCard plan={plan} onSelect={handleLifetime} currentPlan={currentPlan} />
-                </Reveal>
-              ))
-            : plans.map((plan, i) => (
-                <Reveal key={plan.id} delay={i * 80} className="h-full">
-                  <PlanCard plan={plan} billing={billing} onSelect={handleSelect} currentPlan={currentPlan} />
-                </Reveal>
-              ))}
+          {plans.map((plan, i) => (
+            <Reveal key={plan.id} delay={i * 80} className="h-full">
+              <PlanCard
+                plan={plan}
+                billing={billing}
+                onSelect={handleSelect}
+                currentPlan={currentPlan}
+                loading={payingKey === `${plan.id}_${billing}`}
+              />
+            </Reveal>
+          ))}
         </div>
 
         {/* Options SANS abonnement — photo seule + recharge de crédits (façon Credia) */}
-        {billing !== 'lifetime' && (
-          <div id="sans-abonnement" className="scroll-mt-24">
-            <Reveal className="mt-10">
-              <NoSubOptions onBuy={pay} loading={busy} />
-            </Reveal>
-          </div>
-        )}
+        <div id="sans-abonnement" className="scroll-mt-24">
+          <Reveal className="mt-10">
+            <NoSubOptions onBuy={pay} loading={!!payingKey} />
+          </Reveal>
+        </div>
 
         {/* Réassurance */}
         <Reveal className="mx-auto mt-10 max-w-4xl">
