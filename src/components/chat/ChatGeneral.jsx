@@ -9,7 +9,7 @@ function nameColor(name) {
 
 export default function ChatGeneral() {
   const [open, setOpen] = useState(false)
-  const { messages, draft, setDraft, send, loading, username } = useChat(open)
+  const { messages, draft, setDraft, send, loading, username, sendError } = useChat(open)
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -83,6 +83,9 @@ export default function ChatGeneral() {
           </div>
 
           {/* Saisie */}
+          {sendError && (
+            <p className="px-4 pb-1 text-[11px] text-red-400">{sendError}</p>
+          )}
           <form
             onSubmit={(e) => { e.preventDefault(); send() }}
             className="flex items-center gap-2 border-t border-white/5 p-3"

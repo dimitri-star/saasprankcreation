@@ -55,6 +55,8 @@ export function useChat(active) {
     return () => supabase.removeChannel(ch)
   }, [active])
 
+  const [sendError, setSendError] = useState(null)
+
   const send = useCallback(async () => {
     const text = draft.trim()
     if (!text || !user || !username) return
@@ -62,10 +64,28 @@ export function useChat(active) {
     if (now - lastAt.current < RATE_MS) return
     lastAt.current = now
     setDraft('')
-    await supabase
+    setSendError(null)
+
+    const { data, error } = await supabase
       .from('messages')
       .insert({ user_id: user.id, username, content: text.slice(0, 200) })
+      .select('id, username, content, created_at')
+      .single()
+
+    if (error) {
+      console.error('[chat:send]', error)
+      setSendError('Envoi échoué. Réessaie.')
+      return
+    }
+
+    // Ajoute localement si Realtime ne l'a pas déjà injecté
+    if (data) {
+      setMessages(prev => {
+        if (prev.some(m => m.id === data.id)) return prev
+        return [...prev.slice(-(MAX - 1)), data]
+      })
+    }
   }, [draft, user, username])
 
-  return { messages, draft, setDraft, send, loading, username }
+  return { messages, draft, setDraft, send, loading, username, sendError }
 }
