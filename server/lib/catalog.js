@@ -35,12 +35,15 @@ export const CATALOG = {
   monthly: { label: 'PrankCreation Mensuel', mode: 'subscription', interval: 'month', amount: 299,  currency: EUR, creditsPerPeriod: 1000,      plan: 'monthly' },
 
   // ── Abonnements /abonnement (mensuel + annuel) ──
-  evasion_monthly:   { label: 'Évasion — mensuel',   mode: 'subscription', interval: 'month', amount: 799,   currency: EUR, creditsPerPeriod: 2000,      plan: 'evasion'   },
-  evasion_annual:    { label: 'Évasion — annuel',    mode: 'subscription', interval: 'year',  amount: 7668,  currency: EUR, creditsPerPeriod: 24000,     plan: 'evasion'   },
-  signature_monthly: { label: 'Signature — mensuel', mode: 'subscription', interval: 'month', amount: 1499,  currency: EUR, creditsPerPeriod: 7000,      plan: 'signature' },
-  signature_annual:  { label: 'Signature — annuel',  mode: 'subscription', interval: 'year',  amount: 14388, currency: EUR, creditsPerPeriod: 84000,     plan: 'signature' },
-  prestige_monthly:  { label: 'Prestige — mensuel',  mode: 'subscription', interval: 'month', amount: 3499,  currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
-  prestige_annual:   { label: 'Prestige — annuel',   mode: 'subscription', interval: 'year',  amount: 33588, currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
+  // Tarifs alignés Credia : 9,90/19,90/39,90 €/mois affiché PARTOUT (mensuel ET annuel).
+  // Mensuel = débité ce montant chaque mois. Annuel = débité 99/199/399 €/an d'un coup
+  // (affiché « 9,90 €/mois · facturé 99 €/an » en petit gris côté UI).
+  evasion_monthly:   { label: 'Évasion — mensuel',   mode: 'subscription', interval: 'month', amount: 990,   currency: EUR, creditsPerPeriod: 2000,      plan: 'evasion'   },
+  evasion_annual:    { label: 'Évasion — annuel',    mode: 'subscription', interval: 'year',  amount: 9900,  currency: EUR, creditsPerPeriod: 24000,     plan: 'evasion'   },
+  signature_monthly: { label: 'Signature — mensuel', mode: 'subscription', interval: 'month', amount: 1990,  currency: EUR, creditsPerPeriod: 7000,      plan: 'signature' },
+  signature_annual:  { label: 'Signature — annuel',  mode: 'subscription', interval: 'year',  amount: 19900, currency: EUR, creditsPerPeriod: 84000,     plan: 'signature' },
+  prestige_monthly:  { label: 'Prestige — mensuel',  mode: 'subscription', interval: 'month', amount: 3990,  currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
+  prestige_annual:   { label: 'Prestige — annuel',   mode: 'subscription', interval: 'year',  amount: 39900, currency: EUR, creditsPerPeriod: UNLIMITED, plan: 'prestige'  },
 
   // ── Tuto Snap (achat unique 2,99 €) ──
   'snap-tuto': { label: 'Tuto Snap Rouge', mode: 'payment', amount: 299, currency: EUR, creditsPerPeriod: 0, plan: 'snap_tuto' },

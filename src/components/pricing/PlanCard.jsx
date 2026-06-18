@@ -36,13 +36,8 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan, loading
       </div>
       <p className="relative text-sm text-white/45">{plan.tagline}</p>
 
-      {/* Prix façon Credia : gros prix /mois, total annuel discret en petit gris */}
+      {/* Prix façon Credia : même gros prix /mois partout, total annuel discret en petit gris */}
       <div className="relative mt-4">
-        {billing === 'annual' && (
-          <span className="mb-0.5 block text-sm text-white/30 line-through decoration-white/25">
-            {plan.price.monthly} € / mois
-          </span>
-        )}
         <div className="flex items-end gap-1">
           <span className="font-display text-5xl font-bold leading-none text-white">{price}</span>
           <span className="mb-1 text-xl font-bold text-white">€</span>

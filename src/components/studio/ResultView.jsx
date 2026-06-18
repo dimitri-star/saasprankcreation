@@ -224,7 +224,7 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
           </div>
 
           <Link
-            to="/abonnement#sans-abonnement"
+            to="/abonnement"
             className="btn-bleu w-full justify-center text-base shadow-lg shadow-bleu/30 transition-all duration-200 hover:scale-[1.03] hover:brightness-110 active:scale-95"
           >
             ⚡ Débloquer {noun} sans filigrane

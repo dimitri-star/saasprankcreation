@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { plans, billingOptions } from '../data/plans.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { startCheckout } from '../lib/checkout.js'
@@ -6,7 +6,6 @@ import { savePendingCheckout, useResumeCheckout } from '../hooks/usePendingCheck
 import { openBillingPortal } from '../lib/billingPortal.js'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
-import NoSubOptions from '../components/pricing/NoSubOptions.jsx'
 import TrustBadges from '../components/landing/TrustBadges.jsx'
 import Faq from '../components/landing/Faq.jsx'
 import Footer from '../components/landing/Footer.jsx'
@@ -23,16 +22,6 @@ export default function Abonnement() {
   // Après connexion (clic « payer » sans compte → inscription), reprend le paiement
   // automatiquement → redirection Stripe directe (plus besoin de re-cliquer le plan).
   useResumeCheckout(setNotice)
-
-  // Déblocage « juste cette photo » → on arrive avec #sans-abonnement → défile
-  // jusqu'à la section sans-abo (photo seule + recharge de crédits).
-  useEffect(() => {
-    if (window.location.hash !== '#sans-abonnement') return
-    const t = setTimeout(() => {
-      document.getElementById('sans-abonnement')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 350)
-    return () => clearTimeout(t)
-  }, [])
 
   // Démarre le paiement Stripe pour un `priceKey` du catalogue serveur.
   // setPayingKey AVANT l'appel réseau → le bouton affiche « Redirection… »
@@ -173,13 +162,6 @@ export default function Abonnement() {
               />
             </Reveal>
           ))}
-        </div>
-
-        {/* Options SANS abonnement — photo seule + recharge de crédits (façon Credia) */}
-        <div id="sans-abonnement" className="scroll-mt-24">
-          <Reveal className="mt-10">
-            <NoSubOptions onBuy={pay} loading={!!payingKey} />
-          </Reveal>
         </div>
 
         {/* Réassurance */}
