@@ -193,14 +193,14 @@ export default function TutoSnap() {
                   <div className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
                     <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
                     <div>
-                      <p className="text-sm font-semibold text-white">Signature — 14,99€/mois</p>
+                      <p className="text-sm font-semibold text-white">Essentiel — 19,90€/mois</p>
                       <p className="text-[12px] text-white/45">Snap Rouge inclus + 7000 crédits/mois</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/[0.03] px-4 py-3">
                     <span className="mt-0.5 shrink-0 text-emerald-400">✓</span>
                     <div>
-                      <p className="text-sm font-semibold text-white">Prestige — 34,99€/mois</p>
+                      <p className="text-sm font-semibold text-white">Ultimate — 39,90€/mois</p>
                       <p className="text-[12px] text-white/45">Snap Rouge inclus + crédits illimités</p>
                     </div>
                   </div>

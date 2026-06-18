@@ -29,7 +29,7 @@ export const faqs = [
   },
   {
     q: 'Mensuel ou annuel, je prends quoi ?',
-    a: 'Même délire des deux côtés, mais l’annuel te fait économiser 20 % (payé une fois par an). Tu peux switcher de l’un à l’autre quand tu veux.',
+    a: 'Même délire des deux côtés, mais l’annuel te fait économiser ~17 % — genre 2 mois offerts (payé une fois par an). Tu peux switcher de l’un à l’autre quand tu veux.',
     tags: ['pricing'],
   },
   {

@@ -112,10 +112,10 @@ export default function Abonnement() {
         {/* Bandeau offre de lancement */}
         <Reveal className="mx-auto mt-8 flex max-w-md items-center justify-center gap-2.5 rounded-full border border-emerald-400/25 bg-emerald-500/[0.07] px-5 py-2.5 text-center">
           <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-300">
-            −20 %
+            −17 %
           </span>
           <span className="text-sm text-white/70">
-            Offre de lancement sur tous les plans annuels
+            2 mois offerts sur tous les plans annuels
           </span>
         </Reveal>
 

@@ -36,8 +36,13 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan, loading
       </div>
       <p className="relative text-sm text-white/45">{plan.tagline}</p>
 
-      {/* Prix façon Credia : même gros prix /mois partout, total annuel discret en petit gris */}
+      {/* Prix façon Credia : prix barré + gros prix /mois ; total annuel discret en gris */}
       <div className="relative mt-4">
+        {plan.priceStruck && (
+          <span className="block text-sm text-white/30 line-through decoration-white/25">
+            {plan.priceStruck} €
+          </span>
+        )}
         <div className="flex items-end gap-1">
           <span className="font-display text-5xl font-bold leading-none text-white">{price}</span>
           <span className="mb-1 text-xl font-bold text-white">€</span>
@@ -50,9 +55,17 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan, loading
 
       <div className="relative my-4 hairline" />
 
-      {/* Crédits mis en avant (façon Credia, en bleu) */}
-      <div className="relative mb-3 rounded-xl border border-bleu/40 bg-gradient-to-b from-bleu/[0.16] to-bleu/[0.03] px-4 py-2.5 text-center shadow-[0_0_30px_-10px] shadow-bleu/50">
+      {/* Crédits mis en avant (façon Credia, en bleu) + bonus + sous-titre */}
+      <div className="relative mb-3 rounded-xl border border-bleu/40 bg-gradient-to-b from-bleu/[0.16] to-bleu/[0.03] px-4 py-3 text-center shadow-[0_0_30px_-10px] shadow-bleu/50">
         <span className="font-display text-xl font-bold text-white">{plan.credits}</span>
+        {plan.creditsBonus && (
+          <span className="mt-1.5 inline-block rounded-full bg-amber-400/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-300 ring-1 ring-amber-400/30">
+            🎁 {plan.creditsBonus}
+          </span>
+        )}
+        {plan.creditsNote && (
+          <span className="mt-1.5 block text-[11px] leading-snug text-white/45">{plan.creditsNote}</span>
+        )}
       </div>
 
       {/* Tuto Snap Rouge inclus (façon Credia, en rouge) */}
@@ -63,6 +76,7 @@ export default function PlanCard({ plan, billing, onSelect, currentPlan, loading
         </div>
       )}
 
+      <p className="relative mb-2 text-[11px] font-bold uppercase tracking-wider text-white/35">Inclus dans le plan :</p>
       <ul className="relative flex-1 space-y-2">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-2.5 text-sm text-white/75">

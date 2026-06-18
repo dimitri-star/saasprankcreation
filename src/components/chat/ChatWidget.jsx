@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 const intents = [
   {
     keys: ['prix', 'tarif', 'coût', 'cout', 'abonnement', 'combien', 'payer', 'euro'],
-    a: 'Trois plans : Évasion 7,99 €, Signature 14,99 € et Prestige 34,99 €/mois. L’annuel te fait économiser 20 %. Tu veux voir le détail ?',
+    a: 'Trois plans : Découverte 9,90 €, Essentiel 19,90 € et Ultimate 39,90 €/mois. L’annuel revient encore moins cher. Tu veux voir le détail ?',
     action: { label: 'Voir les tarifs', to: '/abonnement' },
   },
   {
