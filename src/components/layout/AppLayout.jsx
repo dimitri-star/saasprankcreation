@@ -3,6 +3,7 @@ import { Link, Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar.jsx'
 import ChatWidget from '../chat/ChatWidget.jsx'
 import ChatGeneral from '../chat/ChatGeneral.jsx'
+import LiveActivity from '../LiveActivity.jsx'
 
 // Coque de l'application : sidebar fixe à gauche (desktop) + contenu décalé.
 // Sur mobile, la sidebar devient un drawer ouvert par le hamburger de la barre top.
@@ -66,6 +67,8 @@ export default function AppLayout() {
       <ChatWidget />
       {/* Chat public entre utilisateurs */}
       <ChatGeneral />
+      {/* Notifications « live » (preuve sociale) — bas gauche */}
+      <LiveActivity />
     </div>
   )
 }

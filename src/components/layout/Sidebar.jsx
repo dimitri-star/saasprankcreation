@@ -37,22 +37,30 @@ export default function Sidebar({ onNavigate }) {
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {nav.map(({ to, label, end, Icon }) => (
+        {nav.map(({ to, label, end, Icon }, i) => (
           <NavLink
             key={to}
             to={to}
             end={end}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
+              `group relative flex items-center gap-3 overflow-hidden rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 isActive
                   ? 'bg-gradient-to-r from-bleu-light to-bleu text-white shadow-[0_8px_24px_-12px_rgba(59,130,246,0.8)]'
                   : 'text-white/60 hover:bg-white/[0.04] hover:text-white'
               }`
             }
           >
-            <Icon />
-            {label}
+            {/* Reflet lumineux qui balaie l'item en continu (décalé par item → effet vague) */}
+            <span
+              aria-hidden
+              className="animate-shimmer pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-bleu/25 to-transparent bg-[length:200%_100%]"
+              style={{ animationDelay: `${i * 0.7}s` }}
+            />
+            <span className="relative z-10 flex items-center gap-3">
+              <Icon />
+              {label}
+            </span>
           </NavLink>
         ))}
       </nav>
