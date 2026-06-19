@@ -34,10 +34,7 @@ export default function HeroStudio() {
             <PromptPanel prompt={prompt} onPrompt={setPrompt} />
           </div>
 
-          <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-center text-xs text-white/40 sm:text-left">
-              Génère ta photo · résultat débloqué dès 1,99€/sem
-            </p>
+          <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
             <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
               <Link
                 to="/studio"
