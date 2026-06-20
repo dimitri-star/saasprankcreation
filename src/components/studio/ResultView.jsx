@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { hasSnapAccess } from '../../lib/planLabels.js'
 import { testimonials } from '../../data/testimonials.js'
+import GeneratedToday from '../GeneratedToday.jsx'
 
 // Télécharge l'image générée depuis son URL distante (Replicate CDN).
 async function downloadImage(url) {
@@ -234,6 +235,9 @@ export default function ResultView({ result, error, mode = 'image', image, isUnl
           <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-400/25 bg-emerald-500/[0.08] px-3 py-2 text-xs font-semibold text-emerald-300">
             🛡️ Satisfait ou remboursé immédiatement
           </div>
+
+          {/* Preuve sociale — générations du jour (façon Credia) */}
+          <GeneratedToday className="w-full" />
 
           <div className="flex items-center gap-2 text-xs text-white/45">
             <span className="flex items-center gap-1">

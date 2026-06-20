@@ -7,6 +7,8 @@ import { openBillingPortal } from '../lib/billingPortal.js'
 import { planLabel, PLAN_CREDITS_LABEL, isPaid, isUnlimitedPlan } from '../lib/planLabels.js'
 import PlanCard from '../components/pricing/PlanCard.jsx'
 import TrustBadges from '../components/landing/TrustBadges.jsx'
+import Testimonials from '../components/landing/Testimonials.jsx'
+import GeneratedToday from '../components/GeneratedToday.jsx'
 import Faq from '../components/landing/Faq.jsx'
 import Footer from '../components/landing/Footer.jsx'
 import Reveal from '../components/Reveal.jsx'
@@ -80,6 +82,11 @@ export default function Abonnement() {
             🛡️ Satisfait ou remboursé immédiatement
           </span>
           <p className="mt-2 text-xs text-white/45">Abonnement résiliable à tout moment dans les paramètres</p>
+        </Reveal>
+
+        {/* Preuve sociale — générations du jour (façon Credia) */}
+        <Reveal className="mt-5">
+          <GeneratedToday />
         </Reveal>
 
         {/* ── Bandeau « abonnement actuel » (utilisateur payant) ── */}
@@ -180,6 +187,9 @@ export default function Abonnement() {
           Paiement sécurisé · Sans engagement · Résiliable en 1 clic
         </p>
       </main>
+
+      {/* Avis clients (façon Credia) */}
+      <Testimonials />
 
       <Faq
         tag="pricing"
